@@ -22,6 +22,8 @@ import javax.swing.border.LineBorder;
  * Creates a new Conversation GUI which is a JFrame, use addOption(), addTextLine() and addSegment() to add options/Text
  * One Conversation GUI should be used for an entire single Conversation.
  * 
+ * TEST Line, trying attempt 1 to commit straight from eclipse upstream to github
+ * 
  * @author Thomas Edwards
  *
  */

@@ -23,6 +23,7 @@ import javax.swing.border.LineBorder;
  * One Conversation GUI should be used for an entire single Conversation.
  * 
  * TEST Line, trying attempt 1 to commit straight from eclipse upstream to github
+ * TEST Line 2
  * 
  * @author Thomas Edwards
  *

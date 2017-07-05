@@ -26,7 +26,7 @@ import javax.swing.border.LineBorder;
  * TEST Line, trying attempt 1 to commit straight from eclipse upstream to github
  * TEST Line 2
  * TEST Line 3
- * TEST Line 4 -> Made on GITHUB
+ * TEST Line 4 -> Made On Tom Desktop
  * 
  * @author Thomas Edwards
  *
@@ -40,7 +40,7 @@ public class ConversationGUI {
 	private boolean optionsAvailable = false;//whether or not conversation options can be clicked
 	
 	public void doNothing(){
-		//does nothing
+		//does nothing except something
 	}
 	
 	private final int frameWidth = 1080, frameHeight = 720;

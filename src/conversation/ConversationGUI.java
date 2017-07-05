@@ -38,7 +38,7 @@ public class ConversationGUI {
 	private boolean optionsAvailable = false;//whether or not conversation options can be clicked
 	
 	public void doNothing(){
-		//does nothing
+		//does nothing except something
 	}
 	
 	private final int frameWidth = 1080, frameHeight = 720;

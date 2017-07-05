@@ -24,11 +24,6 @@ import javax.swing.border.LineBorder;
  * Creates a new Conversation GUI which is a JFrame, use addOption(), addTextLine() and addSegment() to add options/Text
  * One Conversation GUI should be used for an entire single Conversation.
  * 
- * TEST Line, trying attempt 1 to commit straight from eclipse upstream to github
- * TEST Line 2
- * TEST Line 3
- * TEST Line 4 -> Made On Tom Desktop 
- * TEST Line 5 -> Made on Gituhb, should not conflict with anything
  * 
  * @author Thomas Edwards
  *
@@ -40,11 +35,6 @@ public class ConversationGUI {
 	private JTextArea[] options = new JTextArea[4];
 	private JTextArea text;
 	private boolean optionsAvailable = false;//whether or not conversation options can be clicked
-	
-	public void doNothing(){
-		//does nothing except something
-		//Made on Desktop, it now does something
-	}
 	
 	private final int frameWidth = 1080, frameHeight = 720;
 

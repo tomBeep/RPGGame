@@ -41,6 +41,7 @@ public class ConversationGUI {
 	
 	public void doNothing(){
 		//does nothing except something
+		//Made on Desktop, it now does something
 	}
 	
 	private final int frameWidth = 1080, frameHeight = 720;

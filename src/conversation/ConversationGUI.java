@@ -36,6 +36,10 @@ public class ConversationGUI {
 	private JTextArea text;
 	private boolean optionsAvailable = false;//whether or not conversation options can be clicked
 	
+	public void doNothing(){
+		//does nothing
+	}
+	
 	private final int frameWidth = 1080, frameHeight = 720;
 
 	public ConversationGUI(ConversationSegment root) {

@@ -1,5 +1,4 @@
 
-
 package conversation;
 
 import java.awt.BorderLayout;
@@ -13,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,8 +21,10 @@ import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
 /**
- * Creates a new Conversation GUI which is a JFrame, use addOption(), addTextLine() and addSegment() to add options/Text
- * One Conversation GUI should be used for an entire single Conversation.
+ * Creates a new Conversation GUI Frame which will display when the start() method is called. Advance the conversation
+ * by using the space-bar or by calling the next() method, select options by pressing the number or letter corresponding
+ * to the option. The conversation GUI contains a single root ConversationSegment which is the top of the conversation
+ * segment tree.
  * 
  * 
  * @author Thomas Edwards
@@ -34,13 +36,32 @@ public class ConversationGUI {
 	private JLabel picture;
 	private JTextArea[] options = new JTextArea[4];
 	private JTextArea text;
-	private boolean optionsAvailable = false;//whether or not conversation options can be clicked
-	
-	private final int frameWidth = 1080, frameHeight = 720;
+	private boolean optionsAvailable = false;// whether or not conversation options can be clicked
 
+	private final int frameWidth = 1080, frameHeight = 720;// the width/height of the frame.
+
+	/**
+	 * @param root
+	 *            the root of the conversation tree for this conversation
+	 */
 	public ConversationGUI(ConversationSegment root) {
 		this.root = root;
-		setupGUI();
+	}
+
+	/**
+	 * Starts the conversation GUI. by setting up the GUI and displaying the first conversation Segment line
+	 */
+	public void start() {
+		this.setupGUI();
+		this.display();
+	}
+
+	/**
+	 * Ends and removes the conversation GUI. This method is called automatically if next() is called and no more
+	 * conversation is available to be called.
+	 */
+	public void end() {
+		frame.dispose();
 	}
 
 	private JTextArea makeOption() {
@@ -53,7 +74,7 @@ public class ConversationGUI {
 		return option;
 	}
 
-	public void setupGUI() {
+	private void setupGUI() {
 		JPanel picturePanel = new JPanel();
 		picturePanel.setBackground(Color.WHITE);
 		picturePanel.setBorder(new LineBorder(Color.BLACK, 2));
@@ -78,8 +99,6 @@ public class ConversationGUI {
 		text.setFont(new Font("arial", 0, 24));
 		text.setBackground(Color.black);
 		text.setForeground(Color.yellow);
-		text.setText("Hello, My name is Freddy and I am a big black dragon that breathes fire. "
-				+ "You are a stupid little dragon who doesn't know shit... -Example of text-");
 
 		try {
 			BufferedImage myPicture = ImageIO.read(new File("ConversationPictures/dragon1.png"));
@@ -97,7 +116,8 @@ public class ConversationGUI {
 		frame.add(optionPanel, BorderLayout.PAGE_END);
 		frame.setLocation(500, 100);
 		frame.setBackground(Color.white);
-		// frame.setUndecorated(true);
+		frame.setUndecorated(true);
+		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, Color.RED));
 		frame.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
@@ -120,26 +140,35 @@ public class ConversationGUI {
 	}
 
 	/**
-	 * Displays and starts the Conversation GUI's first segment
+	 * Displays and starts the Conversation GUI's first segment. Draws the picture associated with the current
+	 * Conversation Segment, if no picture is associated with the Segment, then the previous segment's picture will
+	 * remain.
 	 */
-	public void display() {
+	private void display() {
 		text.setText(root.getNextLine());
 		BufferedImage img = root.getPicture();
 		if (img != null) {
 			picture.setIcon(new ImageIcon(img));
 		}
+		if (!optionsAvailable)
+			this.removeOptions();
 	}
 
 	/**
 	 * Moves the conversation forward one line. If all the lines have been reached then displays the options, if options
-	 * have already been displayed, does nothing
+	 * have already been displayed but not called, does nothing. If the conversation has no more lines to display and no
+	 * more options then it is over and so calling this method will end the conversation.
+	 * 
+	 * Note. that this method is automatically called whenever spacebar is pressed inside the conversaton GUI.
 	 */
 	public void next() {
 		if (optionsAvailable)
 			return;
 		String nextLine = root.getNextLine();
-		if (nextLine == null)
+		if (nextLine == null && root.getOptions()[0] != null)
 			fillOptions();
+		else if (nextLine == null && root.getOptions()[0] == null)
+			this.end();
 		else
 			text.setText(nextLine);
 	}
@@ -157,6 +186,12 @@ public class ConversationGUI {
 		optionsAvailable = true;
 	}
 
+	private void removeOptions() {
+		for (int i = 0; i < 4; i++) {
+			options[i].setText("");
+		}
+	}
+
 	private void doKey(KeyEvent e) {
 		if (!optionsAvailable && e.getKeyCode() == KeyEvent.VK_SPACE) {
 			next();
@@ -172,33 +207,52 @@ public class ConversationGUI {
 		}
 	}
 
-	private void chooseOption(int optionIndex) {
-		root = root.doOption(optionIndex);
-		optionsAvailable = false;
-	}
-
 	/**
-	 * Hides the conversation GUI
+	 * Selects the specified Option and moves the conversation forward.
+	 * 
+	 * @param optionIndex
+	 *            the index of the option to choose (Should be 0,1,2 or 3)
 	 */
-	public void hide() {
-
+	private void chooseOption(int optionIndex) {
+		if (optionIndex < 4 && optionIndex >= 0 && root.checkValidOption(optionIndex)) {
+			optionsAvailable = false;
+			root = root.doOption(optionIndex);
+			if (root == null) {
+				this.end();
+				return;
+			}
+			this.display();
+		}
 	}
 
 	// TODO remove, only for testing purposes
 	public static void main(String[] args) {
-		ConversationSegment q = new ConversationSegment();
-		q.addLine("Thomas is in a very bad situation");
-		q.addLine("What should Thomas do?");
-		q.addOption("Nothing", null, null);
-		q.addOption("Something", null, null);
-		q.setPicture("dragon2.png");
-		ConversationGUI i = new ConversationGUI(q);
-		try {
-			Thread.sleep(1000);
-			i.display();
-		} catch (InterruptedException e) {
+		ConversationSegment root = new ConversationSegment();
+		root.addLine("Thomas the dragon is in a very bad situation, he is being attacked by another, bigger dragon.");
+		root.addLine("What should Thomas do?");
+		ConversationSegment option1 = new ConversationSegment();
+		option1.addLine("Thomas does nothing and is brutally murdered, then eaten");
+		option1.addLine("Game Over");
+		option1.setPicture("dragon1.png");
+		root.addOption("Nothing", null, option1);
+		ConversationSegment option2 = new ConversationSegment();
+		option2.addLine("Thomas runs away.....");
+		root.addOption("Run away", null, option2);
+		ConversationSegment option3 = new ConversationSegment();
+		option3.addLine(
+				"Thomas fights back, and manages to overpower the bigger dragon using his superior intelligence");
+		root.addOption("FIGHT!", null, option3);
+		root.setPicture("dragon2.png");
 
-			e.printStackTrace();
-		}
+		option3.addOption("Leave", null, null);// should end conversation right after option is selected
+
+		ConversationSegment option12 = new ConversationSegment();
+		option12.addLine("Thomas Spits on the corpse then leaves");// should end conversation after displaying a single
+																	// line
+		option3.addOption("Spit on corpse", null, option12);
+
+		
+		ConversationGUI i = new ConversationGUI(root);
+		i.start();
 	}
 }

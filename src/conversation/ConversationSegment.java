@@ -5,12 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
 /**
- * Contains a segment of conversation which is a number of text lines and up to 4 options.
+ * Contains a segment of conversation which is a number of text lines and up to 4 options. ALl conversations are made up
+ * of multiple conversation segments. A conversation comes to an end when all lines have been read and there are no
+ * options to choose from.
  * 
  * @author Thomas Edwards
  *
@@ -23,32 +24,6 @@ public class ConversationSegment {
 	private Option[] options = new Option[4];
 	private int currentLine = 0;// the current line of text that you are on
 	private String picture;
-
-	public Option[] getOptions() {
-		return options;
-	}
-
-	public ConversationSegment doOption(String option) {
-		for (Option o : options) {
-			if (o.getText().equals(option)) {
-				return o.apply();
-			}
-		}
-		throw new Error("Could not find option of the specified name");
-	}
-
-	public ConversationSegment doOption(int optionIndex) {
-		return options[optionIndex].apply();
-	}
-
-	/**
-	 * @return the next line of text
-	 */
-	public String getNextLine() {
-		if (currentLine >= lines.size())
-			return null;
-		return lines.get(currentLine++);
-	}
 
 	/**
 	 * MAX 4 OPTIONS per segment
@@ -76,7 +51,46 @@ public class ConversationSegment {
 		this.picture = pictureFileName;
 	}
 
-	public BufferedImage getPicture() {
+	/**
+	 * Adds a line of text to the display, text is added in order
+	 * 
+	 * @param line
+	 */
+	public void addLine(String line) {
+		lines.add(line);
+	}
+
+	Option[] getOptions() {
+		return options;
+	}
+
+	ConversationSegment doOption(String option) {
+		for (Option o : options) {
+			if (o.getText().equals(option)) {
+				return o.apply();
+			}
+		}
+		throw new Error("Could not find option of the specified name");
+	}
+
+	boolean checkValidOption(int index) {
+		return options[index] != null;
+	}
+
+	ConversationSegment doOption(int optionIndex) {
+		return options[optionIndex].apply();
+	}
+
+	/**
+	 * @return the next line of text
+	 */
+	String getNextLine() {
+		if (currentLine >= lines.size())
+			return null;
+		return lines.get(currentLine++);
+	}
+
+	BufferedImage getPicture() {
 		if (picture == null)
 			return null;
 		try {
@@ -85,15 +99,6 @@ public class ConversationSegment {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	/**
-	 * Adds a line of text to the display, text is added in order
-	 * 
-	 * @param line
-	 */
-	public void addLine(String line) {
-		lines.add(line);
 	}
 
 }

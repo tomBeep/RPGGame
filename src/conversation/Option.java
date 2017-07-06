@@ -14,7 +14,7 @@ public class Option {
 	/**
 	 * @param optionText
 	 * @param action
-	 *            null if no action to be performed for making this choice
+	 *            null if no action to be performed for making this choice.
 	 * @param next
 	 *            the next segment in this conversation
 	 */

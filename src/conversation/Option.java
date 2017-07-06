@@ -52,4 +52,8 @@ public class Option {
 		return this.text;
 	}
 
+	public ChoiceAction getAction() {
+		return this.action;
+	}
+
 }

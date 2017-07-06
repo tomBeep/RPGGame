@@ -20,8 +20,12 @@ public class ConversationCreator {
 	ConversationSegment root;
 	ConversationSegment current;
 	JPanel panel;
-	
-	//TODO make a way to move Segments around such that you can have segments which point to the same node
+
+	// TODO select/unselct different segments using the mouse/keys
+	// TODO allow you to create an option which links to an already added Segment
+	// TODO label Segments with their depth
+	// TODO LOADING Segments and SAVING under different names
+	// Go back and make methods private/public/package in all classes
 
 	public ConversationCreator() {
 		startGUI();
@@ -65,6 +69,7 @@ public class ConversationCreator {
 	}
 
 	public void loadConversation() {
+		root = ConversationFileReader.loadFile("TEST1.conv");
 		panel.repaint();
 	}
 
@@ -85,7 +90,9 @@ public class ConversationCreator {
 	}
 
 	public void saveConversation() {
-
+		if (root == null)
+			return;
+		ConversationFileReader.saveConversation(root, "TEST1.conv");
 	}
 
 	public void drawTree(Graphics g) {
@@ -97,12 +104,19 @@ public class ConversationCreator {
 		if (current == null)
 			return;
 		int y = 10 + depth * 80;
+		if (current == this.current) {
+			g.setColor(Color.green);
+			g.fillOval(x - 4, y - 4, 68, 68);
+			g.setColor(Color.black);
+		}
 		if (current.getLines().size() == 0) {
 			g.setColor(Color.red);
 			g.fillOval(x + 10, y + 10, 40, 40);
 			g.setColor(Color.black);
-		} else
+		} else {
 			g.fillOval(x, y, 60, 60);
+		}
+
 		int childX = x;
 		for (int i = 0; i < 4; i++) {
 			Option o = current.getOptions()[i];
@@ -173,7 +187,7 @@ public class ConversationCreator {
 		});
 		options.add(deleteOption);
 
-		frame.setSize(500, 500);
+		frame.setSize(1000, 500);
 		frame.add(options);
 		frame.setTitle("Editing Segment");
 		frame.setVisible(true);

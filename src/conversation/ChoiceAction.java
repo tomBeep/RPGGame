@@ -7,4 +7,6 @@ interface ChoiceAction {
 	 * lasting consequences and thus doAction() can simply be null.
 	 */
 	public void doAction();
+
+
 }

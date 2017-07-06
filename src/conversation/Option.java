@@ -32,6 +32,10 @@ public class Option {
 		return text;
 	}
 
+	public ConversationSegment getNext() {
+		return next;
+	}
+
 	/**
 	 * Applies the action (if any) associated with this choice and returns the next segment or Null if end of convo
 	 * 
@@ -41,6 +45,11 @@ public class Option {
 		if (action != null)
 			action.doAction();
 		return next;
+	}
+
+	@Override
+	public String toString() {
+		return this.text;
 	}
 
 }

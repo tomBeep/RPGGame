@@ -90,6 +90,18 @@ public class ConversationSegment {
 		return lines.get(currentLine++);
 	}
 
+	List<String> getLines() {
+		return lines;
+	}
+
+	void clearLines() {
+		lines = new ArrayList<String>();
+	}
+
+	String getPictureName() {
+		return this.picture;
+	}
+
 	BufferedImage getPicture() {
 		if (picture == null)
 			return null;

@@ -3,6 +3,7 @@ package conversation;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,12 @@ import javax.imageio.ImageIO;
  * @author Thomas Edwards
  *
  */
-public class ConversationSegment {
+public class ConversationSegment implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7265774393992482071L;
 	/**
 	 * The lines of text displayed prior to the choice
 	 */
@@ -67,7 +73,7 @@ public class ConversationSegment {
 	ConversationSegment doOption(String option) {
 		for (Option o : options) {
 			if (o.getText().equals(option)) {
-				return o.apply();
+				return o.doOption();
 			}
 		}
 		throw new Error("Could not find option of the specified name");
@@ -78,7 +84,7 @@ public class ConversationSegment {
 	}
 
 	ConversationSegment doOption(int optionIndex) {
-		return options[optionIndex].apply();
+		return options[optionIndex].doOption();
 	}
 
 	/**
@@ -103,9 +109,11 @@ public class ConversationSegment {
 	}
 
 	BufferedImage getPicture() {
-		if (picture == null)
+		if (picture == null || picture.equals(""))
 			return null;
 		try {
+			if (picture.startsWith("ConversationPictures/"))
+				return ImageIO.read(new File(picture));
 			return ImageIO.read(new File("ConversationPictures/" + picture));
 		} catch (IOException e) {
 			e.printStackTrace();

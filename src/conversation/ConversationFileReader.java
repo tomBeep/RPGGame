@@ -1,84 +1,51 @@
 package conversation;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Stack;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class ConversationFileReader {
 
-	public static ConversationSegment loadFile(String filename) {
-		try {
-			File file = new File(filename);
-			Scanner sc = new Scanner(file);
-			// reads all of a segments information
-			sc.useDelimiter(":");
-			String id = sc.next();
-			String SegmentLines = sc.next();
-			String[] options = sc.next().split("->");
-
-			// now need to recreate the tree from each segment
-
-			sc.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+	/**
+	 * Loads a conversationSegment based on the given filename, will throw an exception if it can't find file or if
+	 * something goes wrong with the loading.
+	 * 
+	 * @param filename
+	 * @return the Conversation containing the root segment of this Conversation.
+	 * @throws Exception
+	 */
+	public static Conversation loadFile(String filename) throws Exception {
+		// will add the ".conv" if it is not specified in the file name
+		if (!filename.substring(filename.length() - 5).equals(".conv")) {
+			filename += ".conv";
 		}
-		return null;
+
+		FileInputStream streamIn = new FileInputStream(filename);
+		ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
+		Conversation c = (Conversation) objectinputstream.readObject();
+		objectinputstream.close();
+		return c;
 	}
 
 	/**
-	 * Saves a conversation into a text file. Each Segment is written into the text file in the forms:
-	 * :Segment.ToString() : AllofSegmentLines (each line separated by a new line character) :
-	 * OptionText->ActionID->nextSegmentToString()->...Option2... (nextSegment will read 'NULL' if option does not lead
-	 * to another segment)-->Option3 -> :
+	 * Saves the conversation as the specified filename. Will always add a .conv to the end of the filename.
 	 * 
 	 * @param root
 	 * @param filename
 	 */
 	public static void saveConversation(ConversationSegment root, String filename) {
+		filename += ".conv";
+		Conversation c = new Conversation(root);
 		try {
-			File file = new File(filename);
-			FileWriter f = new FileWriter(file);
-			Stack<ConversationSegment> stack = new Stack<>();
-			HashSet<ConversationSegment> set = new HashSet<>();
-			stack.push(root);
-			while (!stack.isEmpty()) {
-				ConversationSegment current = stack.pop();
-				if (set.contains(current))
-					continue;
-				set.add(current);
-				f.write(":" + current.toString() + ":");
-				for (String s : current.getLines())
-					f.write(s + "\n");
-				f.write(":");
-				for (int i = 0; i < 4; i++) {
-					Option o = current.getOptions()[i];
-					if (o != null) {
-						if (o.getNext() != null) {
-							f.write(o.getText() + "->" + getID(o.getAction()) + "->" + o.getNext().toString() + "->");
-							stack.push(o.getNext());
-						} else
-							f.write(o.getText() + "->" + getID(o.getAction()) + "->" + "NULL" + "->");
-					}
-				}
-			}
-			f.close();
-			System.out.println("Saved successfully in " + file.getAbsolutePath());
+			FileOutputStream fout = new FileOutputStream(filename);
+			ObjectOutputStream oos = new ObjectOutputStream(fout);
+			oos.writeObject(c);
+			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * @param a
-	 *            the Choice action for this segment
-	 * @return the ID if the choice Action, depending on the type of choice action, different choice actions return
-	 *         different ID's
-	 */
-	public static String getID(ChoiceAction a) {
-		return "0000";
-	}
 }

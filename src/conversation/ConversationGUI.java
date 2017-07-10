@@ -49,6 +49,18 @@ public class ConversationGUI {
 	}
 
 	/**
+	 * @param filename
+	 *            the root of the conversation tree for this conversation
+	 */
+	public ConversationGUI(String filename) {
+		try {
+			this.root = ConversationFileReader.loadFile(filename).getRoot();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Starts the conversation GUI. by setting up the GUI and displaying the first conversation Segment line
 	 */
 	public void start() {
@@ -101,12 +113,12 @@ public class ConversationGUI {
 		text.setForeground(Color.yellow);
 
 		try {
+			// The default picture
 			BufferedImage myPicture = ImageIO.read(new File("ConversationPictures/dragon1.png"));
 			picture = new JLabel(new ImageIcon(myPicture));
 			picture.setPreferredSize(new Dimension(800, 500));
 			picturePanel.add(picture);
 		} catch (IOException e) {
-
 			e.printStackTrace();
 		}
 
@@ -251,8 +263,8 @@ public class ConversationGUI {
 																	// line
 		option3.addOption("Spit on corpse", null, option12);
 
-		
-		ConversationGUI i = new ConversationGUI(root);
+		ConversationFileReader.saveConversation(root, "TEST1");
+		ConversationGUI i = new ConversationGUI("TEST1");
 		i.start();
 	}
 }

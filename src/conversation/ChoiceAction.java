@@ -1,5 +1,11 @@
 package conversation;
 
+/**
+ * Potentially needs to be serializable some how.
+ * 
+ * @author tomo1_000
+ *
+ */
 @FunctionalInterface
 interface ChoiceAction {
 	/**
@@ -7,6 +13,5 @@ interface ChoiceAction {
 	 * lasting consequences and thus doAction() can simply be null.
 	 */
 	public void doAction();
-
 
 }

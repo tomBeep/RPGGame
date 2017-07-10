@@ -1,12 +1,18 @@
 package conversation;
 
+import java.io.Serializable;
+
 /**
  * An Option within a conversation segment
  * 
  * @author Thomas Edwards
  *
  */
-public class Option {
+public class Option implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -713174756300223308L;
 	private ChoiceAction action;
 	private String text;
 	private ConversationSegment next;
@@ -41,7 +47,7 @@ public class Option {
 	 * 
 	 * @return the next Conversation Segment
 	 */
-	public ConversationSegment apply() {
+	public ConversationSegment doOption() {
 		if (action != null)
 			action.doAction();
 		return next;

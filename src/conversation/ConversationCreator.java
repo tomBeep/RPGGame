@@ -6,7 +6,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,11 +26,12 @@ public class ConversationCreator {
 	ConversationSegment current;
 	JPanel panel;
 
+	private final int width = 1000, height = 750;
+
 	// TODO select/unselct different segments using the mouse/keys
 	// TODO allow you to create an option which links to an already added Segment
 	// TODO label Segments with their depth
-	// TODO LOADING Segments and SAVING under different names
-	// Go back and make methods private/public/package in all classes
+	// TODO draw Segments better.
 
 	public ConversationCreator() {
 		startGUI();
@@ -44,6 +50,9 @@ public class ConversationCreator {
 		JButton b4 = new JButton("Load Conversation");
 		b4.addActionListener((e) -> loadConversation());
 
+		JButton b5 = new JButton("Delete all Segments");
+		b5.addActionListener((e) -> root = current = null);
+
 		panel = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
@@ -51,11 +60,12 @@ public class ConversationCreator {
 				drawTree(g);
 			}
 		};
-		panel.setPreferredSize(new Dimension(1000, 750));
+		panel.setPreferredSize(new Dimension(this.width, this.height));
 
 		JComponent buttons = new JPanel();
 		buttons.add(b1);
 		buttons.add(b3);
+		buttons.add(b5);
 		buttons.add(b2);
 		buttons.add(b4);
 
@@ -69,8 +79,34 @@ public class ConversationCreator {
 	}
 
 	public void loadConversation() {
-		root = ConversationFileReader.loadFile("TEST1.conv");
-		panel.repaint();
+
+		JFrame frame = new JFrame();
+		JPanel panel = new JPanel();
+		JTextArea text = new JTextArea();
+		JButton load = new JButton("Load");
+		load.addActionListener((e) -> {
+			try {
+				root = ConversationFileReader.loadFile(text.getText()).getRoot();
+				current = root;
+				this.panel.repaint();
+				frame.dispose();
+			} catch (Exception e1) {
+				text.setText("Error, loading the file, could not find Filename: \"" + text.getText() + "\"");
+			}
+		});
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener((e) -> frame.dispose());
+		text.setPreferredSize(new Dimension(400, 20));
+		JLabel label = new JLabel("File Name: ");
+		panel.add(label);
+		panel.add(text);
+		panel.add(load);
+		panel.add(cancel);
+		frame.add(panel);
+		frame.pack();
+		frame.setTitle("Load");
+		frame.setResizable(false);
+		frame.setVisible(true);
 	}
 
 	public void moveCurrentSegment() {
@@ -78,57 +114,100 @@ public class ConversationCreator {
 	}
 
 	public void editCurrentSegment() {
-		editingPanel();
+		editingPanel(false);
 		panel.repaint();
 	}
 
 	public void createNewSegment() {
 		root = new ConversationSegment();
 		current = root;
-		editingPanel();
+		editingPanel(true);
 		panel.repaint();
 	}
 
 	public void saveConversation() {
 		if (root == null)
 			return;
-		ConversationFileReader.saveConversation(root, "TEST1.conv");
+		JFrame frame = new JFrame();
+		JPanel panel = new JPanel();
+		JTextArea text = new JTextArea();
+		JButton save = new JButton("Save");
+		save.addActionListener((e) -> {
+			ConversationFileReader.saveConversation(root, text.getText());
+			frame.dispose();
+		});
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener((e) -> frame.dispose());
+		text.setPreferredSize(new Dimension(400, 20));
+		JLabel label = new JLabel("File Name: ");
+		panel.add(label);
+		panel.add(text);
+		panel.add(save);
+		panel.add(cancel);
+		frame.add(panel);
+		frame.pack();
+		frame.setTitle("Save");
+		frame.setResizable(false);
+		frame.setVisible(true);
 	}
 
-	public void drawTree(Graphics g) {
+	private void drawTree(Graphics g) {
+		if (current == null || root == null)
+			return;
 		g.setColor(Color.BLACK);
-		drawNode(g, root, 0, 10);
+		Map<ConversationSegment, Box> boxes = new HashMap<>();
+		Map<ConversationSegment, Integer> nodes = new HashMap<>();
+		this.setNodes(boxes, nodes, root, 0);
+		this.drawNodes(g, boxes, nodes);
+		this.drawLines(g, boxes);
 	}
 
-	public void drawNode(Graphics g, ConversationSegment current, int depth, int x) {
+	private void drawLines(Graphics g, Map<ConversationSegment, Box> lines) {
+		for (Entry<ConversationSegment, Box> e : lines.entrySet()) {
+			for (int i = 0; i < 4; i++) {
+				Option o = e.getKey().getOptions()[i];
+				if (o != null && o.getNext() != null) {
+					ConversationSegment s = o.getNext();
+					Box b = e.getValue();
+					Box b2 = lines.get(s);
+					g.drawLine(b.x, b.y, b2.x, b2.y);
+				}
+			}
+		}
+	}
+
+	private void setNodes(Map<ConversationSegment, Box> boxes, Map<ConversationSegment, Integer> nodes,
+			ConversationSegment current, int depth) {
 		if (current == null)
 			return;
-		int y = 10 + depth * 80;
-		if (current == this.current) {
-			g.setColor(Color.green);
-			g.fillOval(x - 4, y - 4, 68, 68);
-			g.setColor(Color.black);
-		}
-		if (current.getLines().size() == 0) {
-			g.setColor(Color.red);
-			g.fillOval(x + 10, y + 10, 40, 40);
-			g.setColor(Color.black);
-		} else {
-			g.fillOval(x, y, 60, 60);
-		}
-
-		int childX = x;
-		for (int i = 0; i < 4; i++) {
-			Option o = current.getOptions()[i];
-			if (o == null)
-				return;
-			g.drawLine(x + 30, y + 30, childX + 30, y + 110);
-			drawNode(g, o.getNext(), depth + 1, childX);
-			childX += 80;
+		if (!nodes.containsKey(current)) {
+			nodes.put(current, depth);
+			for (int i = 0; i < 4; i++) {
+				if (current.getOptions()[i] != null) {
+					setNodes(boxes, nodes, current.getOptions()[i].getNext(), depth + 1);
+				}
+			}
 		}
 	}
 
-	public void editingPanel() {
+	private void drawNodes(Graphics g, Map<ConversationSegment, Box> boxes, Map<ConversationSegment, Integer> nodes) {
+		Map<Integer, Integer> depthMap = new HashMap<>();// depth -> x
+		for (Entry<ConversationSegment, Integer> e : nodes.entrySet()) {
+			Integer x = depthMap.get(e.getValue());
+			if (x == null)
+				x = 40;
+			g.drawRect(x, e.getValue() * 80, 90, 40);
+			boxes.put(e.getKey(), new Box(x, e.getValue() * 80));
+			if (e.getKey() == current) {
+				g.setColor(Color.RED);
+				g.drawRect(x + 2, e.getValue() * 80 + 2, 86, 36);
+				g.setColor(Color.BLACK);
+			}
+			depthMap.put(e.getValue(), x + 100);
+		}
+	}
+
+	public void editingPanel(boolean newRoot) {
 		if (current == null)
 			return;
 		JFrame frame = new JFrame();
@@ -152,16 +231,19 @@ public class ConversationCreator {
 
 		JTextArea pic = new JTextArea();
 		pic.setText(current.getPictureName());
-		options.add(new JLabel("Picture"));
+		options.add(new JLabel("Picture File Name"));
 		options.add(pic);
 
 		JButton cancel = new JButton("Cancel");
 		cancel.addActionListener((e) -> {
 			frame.dispose();
 		});
-		options.add(cancel);
+		cancel.setBackground(Color.red);
 
-		JButton update = new JButton("Update");
+		JButton update = new JButton("UPDATE Segment");
+		update.setBackground(Color.GREEN);
+		if (newRoot)
+			update.setText("Add Root");
 		update.addActionListener((e) -> {
 			List<Option> optionList = new ArrayList<Option>();
 			for (int i = 0; i < optionBox.getItemCount(); i++)
@@ -169,7 +251,6 @@ public class ConversationCreator {
 			updateCurrentSegment(lines.getText(), pic.getText(), optionList);
 			frame.dispose();
 		});
-		options.add(update);
 
 		JButton addOption = new JButton("Add Option");
 		addOption.addActionListener((e) -> {
@@ -177,7 +258,18 @@ public class ConversationCreator {
 				return;// can't add more than 4 options to a segment
 			newOption(optionBox);
 		});
-		options.add(addOption);
+
+		JButton moveToOption = new JButton("UPDATE current Segment and move to Selected Option");
+		moveToOption.addActionListener((e) -> {
+			List<Option> optionList = new ArrayList<Option>();
+			for (int i = 0; i < optionBox.getItemCount(); i++)
+				optionList.add(optionBox.getItemAt(i));
+			updateCurrentSegment(lines.getText(), pic.getText(), optionList);
+			current = optionBox.getItemAt(optionBox.getSelectedIndex()).getNext();
+			frame.dispose();
+			editingPanel(false);
+			panel.repaint();
+		});
 
 		JButton deleteOption = new JButton("Delete Option");
 		deleteOption.addActionListener((e) -> {
@@ -185,11 +277,19 @@ public class ConversationCreator {
 				return;// can't add more than 4 options to a segment
 			optionBox.removeItemAt(optionBox.getSelectedIndex());
 		});
-		options.add(deleteOption);
 
-		frame.setSize(1000, 500);
+		options.add(deleteOption);
+		options.add(addOption);
+		options.add(moveToOption);
+		options.add(cancel);
+		options.add(update);
+
+		frame.setSize(1500, 500);
 		frame.add(options);
-		frame.setTitle("Editing Segment");
+		if (!newRoot)
+			frame.setTitle("Editing Segment");
+		else
+			frame.setTitle("New Root Segment");
 		frame.setVisible(true);
 	}
 
@@ -243,6 +343,15 @@ public class ConversationCreator {
 				current.getOptions()[i] = optionList.get(i);
 		}
 		panel.repaint();
+	}
+
+	private class Box {
+		int x, y;
+
+		public Box(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
 	}
 
 	public static void main(String[] args) {

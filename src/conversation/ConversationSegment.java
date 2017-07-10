@@ -66,11 +66,11 @@ public class ConversationSegment implements Serializable {
 		lines.add(line);
 	}
 
-	Option[] getOptions() {
+	public Option[] getOptions() {
 		return options;
 	}
 
-	ConversationSegment doOption(String option) {
+	public ConversationSegment doOption(String option) {
 		for (Option o : options) {
 			if (o.getText().equals(option)) {
 				return o.doOption();
@@ -79,7 +79,7 @@ public class ConversationSegment implements Serializable {
 		throw new Error("Could not find option of the specified name");
 	}
 
-	boolean checkValidOption(int index) {
+	public boolean checkValidOption(int index) {
 		return options[index] != null;
 	}
 

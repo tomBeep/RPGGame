@@ -1,19 +1,12 @@
 package conversation;
 
-import java.io.Serializable;
+public interface Conversation extends Runnable {
 
-public class Conversation implements Serializable {
-
-	private static final long serialVersionUID = 7049718688891317600L;
-
-	private ConversationSegment root;
-
-	public Conversation(ConversationSegment root) {
-		this.root = root;
-	}
-
-	public ConversationSegment getRoot() {
-		return root;
-	}
+	/**
+	 * Starts the conversation and displays the first line of text in the conversation. The conversation is moved
+	 * forward via spacebar/option number. The Conversation is run in a separate thread and window. So a new
+	 * Conversation should always be made in a new thread.
+	 */
+	public void start();
 
 }

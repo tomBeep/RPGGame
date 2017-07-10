@@ -30,7 +30,7 @@ import javax.swing.border.LineBorder;
  * @author Thomas Edwards
  *
  */
-public class ConversationGUI {
+public class ConversationGUI implements Conversation {
 	private ConversationSegment root;
 	private JFrame frame;
 	private JLabel picture;
@@ -54,18 +54,21 @@ public class ConversationGUI {
 	 */
 	public ConversationGUI(String filename) {
 		try {
-			this.root = ConversationFileReader.loadFile(filename).getRoot();
+			this.root = ConversationFileReader.loadFile(filename);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * Starts the conversation GUI. by setting up the GUI and displaying the first conversation Segment line
-	 */
+	@Override
 	public void start() {
 		this.setupGUI();
 		this.display();
+	}
+
+	@Override
+	public void run() {
+		this.start();
 	}
 
 	/**
@@ -74,6 +77,25 @@ public class ConversationGUI {
 	 */
 	public void end() {
 		frame.dispose();
+	}
+
+	/**
+	 * Moves the conversation forward one line. If all the lines have been reached then displays the options, if options
+	 * have already been displayed but not called, does nothing. If the conversation has no more lines to display and no
+	 * more options then it is over and so calling this method will end the conversation.
+	 * 
+	 * Note. that this method is automatically called whenever spacebar is pressed inside the conversaton GUI.
+	 */
+	public void next() {
+		if (optionsAvailable)
+			return;
+		String nextLine = root.getNextLine();
+		if (nextLine == null && root.getOptions()[0] != null)
+			fillOptions();
+		else if (nextLine == null && root.getOptions()[0] == null)
+			this.end();
+		else
+			text.setText(nextLine);
 	}
 
 	private JTextArea makeOption() {
@@ -167,25 +189,6 @@ public class ConversationGUI {
 	}
 
 	/**
-	 * Moves the conversation forward one line. If all the lines have been reached then displays the options, if options
-	 * have already been displayed but not called, does nothing. If the conversation has no more lines to display and no
-	 * more options then it is over and so calling this method will end the conversation.
-	 * 
-	 * Note. that this method is automatically called whenever spacebar is pressed inside the conversaton GUI.
-	 */
-	public void next() {
-		if (optionsAvailable)
-			return;
-		String nextLine = root.getNextLine();
-		if (nextLine == null && root.getOptions()[0] != null)
-			fillOptions();
-		else if (nextLine == null && root.getOptions()[0] == null)
-			this.end();
-		else
-			text.setText(nextLine);
-	}
-
-	/**
 	 * Displays the options available and removes the restriction
 	 */
 	private void fillOptions() {
@@ -264,7 +267,9 @@ public class ConversationGUI {
 		option3.addOption("Spit on corpse", null, option12);
 
 		ConversationFileReader.saveConversation(root, "TEST1");
-		ConversationGUI i = new ConversationGUI("TEST1");
-		i.start();
+		Conversation i = new ConversationGUI("TEST1");
+		Thread t = new Thread(i);
+		t.start();
 	}
+
 }

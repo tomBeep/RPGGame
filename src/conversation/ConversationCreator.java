@@ -41,17 +41,20 @@ public class ConversationCreator {
 		JButton b1 = new JButton("Create new Root Segment");
 		b1.addActionListener((e) -> createNewSegment());
 
-		JButton b2 = new JButton("Save Conversation");
-		b2.addActionListener((e) -> saveConversation());
+		JButton b2 = new JButton("Edit current Segment");
+		b2.addActionListener((e) -> editCurrentSegment());
 
-		JButton b3 = new JButton("Edit current Segment");
-		b3.addActionListener((e) -> editCurrentSegment());
+		JButton b3 = new JButton("Delete all Segments");
+		b3.addActionListener((e) -> {
+			root = current = null;
+			panel.repaint();
+		});
 
-		JButton b4 = new JButton("Load Conversation");
-		b4.addActionListener((e) -> loadConversation());
+		JButton b4 = new JButton("Save Conversation");
+		b4.addActionListener((e) -> saveConversation());
 
-		JButton b5 = new JButton("Delete all Segments");
-		b5.addActionListener((e) -> root = current = null);
+		JButton b5 = new JButton("Load Conversation");
+		b5.addActionListener((e) -> loadConversation());
 
 		panel = new JPanel() {
 			@Override
@@ -64,10 +67,10 @@ public class ConversationCreator {
 
 		JComponent buttons = new JPanel();
 		buttons.add(b1);
-		buttons.add(b3);
-		buttons.add(b5);
 		buttons.add(b2);
+		buttons.add(b3);
 		buttons.add(b4);
+		buttons.add(b5);
 
 		JFrame frame = new JFrame();
 		frame.add(panel, BorderLayout.PAGE_START);
@@ -86,7 +89,7 @@ public class ConversationCreator {
 		JButton load = new JButton("Load");
 		load.addActionListener((e) -> {
 			try {
-				root = ConversationFileReader.loadFile(text.getText()).getRoot();
+				root = ConversationFileReader.loadFile(text.getText());
 				current = root;
 				this.panel.repaint();
 				frame.dispose();

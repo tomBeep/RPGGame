@@ -16,7 +16,7 @@ public class ConversationFileReader {
 	 * @return the Conversation containing the root segment of this Conversation.
 	 * @throws Exception
 	 */
-	public static Conversation loadFile(String filename) throws Exception {
+	public static ConversationSegment loadFile(String filename) throws Exception {
 		// will add the ".conv" if it is not specified in the file name
 		if (!filename.substring(filename.length() - 5).equals(".conv")) {
 			filename += ".conv";
@@ -24,7 +24,7 @@ public class ConversationFileReader {
 
 		FileInputStream streamIn = new FileInputStream(filename);
 		ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
-		Conversation c = (Conversation) objectinputstream.readObject();
+		ConversationSegment c = (ConversationSegment) objectinputstream.readObject();
 		objectinputstream.close();
 		return c;
 	}
@@ -37,11 +37,10 @@ public class ConversationFileReader {
 	 */
 	public static void saveConversation(ConversationSegment root, String filename) {
 		filename += ".conv";
-		Conversation c = new Conversation(root);
 		try {
 			FileOutputStream fout = new FileOutputStream(filename);
 			ObjectOutputStream oos = new ObjectOutputStream(fout);
-			oos.writeObject(c);
+			oos.writeObject(root);
 			oos.close();
 		} catch (IOException e) {
 			e.printStackTrace();

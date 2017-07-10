@@ -25,8 +25,17 @@ public class ConversationFileReader {
 		FileInputStream streamIn = new FileInputStream(filename);
 		ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
 		ConversationSegment c = (ConversationSegment) objectinputstream.readObject();
+		loadPictures(c);
 		objectinputstream.close();
 		return c;
+	}
+
+	private static void loadPictures(ConversationSegment root) throws IOException {
+		root.setPicture(root.getPictureName());
+		for (int i = 0; i < 4; i++) {
+			if (root.getOptions()[i] != null && root.getOptions()[i].getNext() != null)
+				loadPictures(root.getOptions()[i].getNext());
+		}
 	}
 
 	/**

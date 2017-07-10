@@ -242,31 +242,6 @@ public class ConversationGUI implements Conversation {
 
 	// TODO remove, only for testing purposes
 	public static void main(String[] args) {
-		ConversationSegment root = new ConversationSegment();
-		root.addLine("Thomas the dragon is in a very bad situation, he is being attacked by another, bigger dragon.");
-		root.addLine("What should Thomas do?");
-		ConversationSegment option1 = new ConversationSegment();
-		option1.addLine("Thomas does nothing and is brutally murdered, then eaten");
-		option1.addLine("Game Over");
-		option1.setPicture("dragon1.png");
-		root.addOption("Nothing", null, option1);
-		ConversationSegment option2 = new ConversationSegment();
-		option2.addLine("Thomas runs away.....");
-		root.addOption("Run away", null, option2);
-		ConversationSegment option3 = new ConversationSegment();
-		option3.addLine(
-				"Thomas fights back, and manages to overpower the bigger dragon using his superior intelligence");
-		root.addOption("FIGHT!", null, option3);
-		root.setPicture("dragon2.png");
-
-		option3.addOption("Leave", null, null);// should end conversation right after option is selected
-
-		ConversationSegment option12 = new ConversationSegment();
-		option12.addLine("Thomas Spits on the corpse then leaves");// should end conversation after displaying a single
-																	// line
-		option3.addOption("Spit on corpse", null, option12);
-
-		ConversationFileReader.saveConversation(root, "TEST1");
 		Conversation i = new ConversationGUI("TEST1");
 		Thread t = new Thread(i);
 		t.start();

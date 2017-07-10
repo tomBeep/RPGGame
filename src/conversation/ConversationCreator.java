@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -28,10 +30,9 @@ public class ConversationCreator {
 
 	private final int width = 1000, height = 750;
 
-	// TODO select/unselct different segments using the mouse/keys
+	// TODO select/un-select different segments using the mouse/keys
 	// TODO allow you to create an option which links to an already added Segment
 	// TODO label Segments with their depth
-	// TODO draw Segments better.
 
 	public ConversationCreator() {
 		startGUI();
@@ -76,6 +77,7 @@ public class ConversationCreator {
 		frame.add(panel, BorderLayout.PAGE_START);
 		frame.add(buttons, BorderLayout.PAGE_END);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("Conversation Editor");
 		frame.pack();
 		frame.setVisible(true);
 
@@ -94,7 +96,7 @@ public class ConversationCreator {
 				this.panel.repaint();
 				frame.dispose();
 			} catch (Exception e1) {
-				text.setText("Error, loading the file, could not find Filename: \"" + text.getText() + "\"");
+				JOptionPane.showMessageDialog(panel, "File could not be found");
 			}
 		});
 		JButton cancel = new JButton("Cancel");
@@ -108,6 +110,7 @@ public class ConversationCreator {
 		frame.add(panel);
 		frame.pack();
 		frame.setTitle("Load");
+		frame.setLocation(300, 300);
 		frame.setResizable(false);
 		frame.setVisible(true);
 	}
@@ -251,8 +254,8 @@ public class ConversationCreator {
 			List<Option> optionList = new ArrayList<Option>();
 			for (int i = 0; i < optionBox.getItemCount(); i++)
 				optionList.add(optionBox.getItemAt(i));
-			updateCurrentSegment(lines.getText(), pic.getText(), optionList);
-			frame.dispose();
+			if (updateCurrentSegment(lines.getText(), pic.getText(), optionList, frame))
+				frame.dispose();
 		});
 
 		JButton addOption = new JButton("Add Option");
@@ -264,11 +267,18 @@ public class ConversationCreator {
 
 		JButton moveToOption = new JButton("UPDATE current Segment and move to Selected Option");
 		moveToOption.addActionListener((e) -> {
+			if (newRoot) {
+				JOptionPane.showMessageDialog(frame, "Can't move to an option when this is a new root");
+				return;
+			}
 			List<Option> optionList = new ArrayList<Option>();
 			for (int i = 0; i < optionBox.getItemCount(); i++)
 				optionList.add(optionBox.getItemAt(i));
-			updateCurrentSegment(lines.getText(), pic.getText(), optionList);
-			current = optionBox.getItemAt(optionBox.getSelectedIndex()).getNext();
+			if (!updateCurrentSegment(lines.getText(), pic.getText(), optionList, frame))
+				return;
+			Option o = optionBox.getItemAt(optionBox.getSelectedIndex());
+			if (o != null && o.getNext() != null)
+				current = o.getNext();
 			frame.dispose();
 			editingPanel(false);
 			panel.repaint();
@@ -290,7 +300,7 @@ public class ConversationCreator {
 		frame.setSize(1500, 500);
 		frame.add(options);
 		if (!newRoot)
-			frame.setTitle("Editing Segment");
+			frame.setTitle("Segment Editor");
 		else
 			frame.setTitle("New Root Segment");
 		frame.setVisible(true);
@@ -312,11 +322,13 @@ public class ConversationCreator {
 			optionBox.addItem(o);
 			frame.dispose();
 		});
-		frame.add(add);
+		add.setBackground(Color.green);
 
 		JButton cancel = new JButton("Cancel");
 		cancel.addActionListener((e) -> frame.dispose());
+		cancel.setBackground(Color.red);
 		frame.add(cancel);
+		frame.add(add);
 		frame.setSize(500, 300);
 		frame.setLocation(150, 100);
 		frame.setTitle("New Option");
@@ -332,13 +344,19 @@ public class ConversationCreator {
 		return s.toString();
 	}
 
-	void updateCurrentSegment(String line, String pic, List<Option> optionList) {
+	boolean updateCurrentSegment(String line, String pic, List<Option> optionList, JFrame frame) {
+		try {
+			current.setPicture(pic);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(frame, "Picture file associated with this segment could not be found");
+			return false;
+		}
 		String[] lines = line.split("\n");
 		current.clearLines();
-		for (String s : lines) {
-			current.addLine(s);
-		}
-		current.setPicture(pic);
+		if (lines[0].length() != 0)
+			for (String s : lines) {
+				current.addLine(s);
+			}
 		for (int i = 0; i < 4; i++) {
 			if (i >= optionList.size())
 				current.getOptions()[i] = null;
@@ -346,6 +364,7 @@ public class ConversationCreator {
 				current.getOptions()[i] = optionList.get(i);
 		}
 		panel.repaint();
+		return true;
 	}
 
 	private class Box {

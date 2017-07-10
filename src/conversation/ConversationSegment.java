@@ -29,7 +29,20 @@ public class ConversationSegment implements Serializable {
 	private List<String> lines = new ArrayList<String>();
 	private Option[] options = new Option[4];
 	private int currentLine = 0;// the current line of text that you are on
-	private String picture;
+	private String pictureName;
+	private transient BufferedImage picture;
+
+	public ConversationSegment doOption(int optionIndex) {
+		return options[optionIndex].doOption();
+	}
+
+	/**
+	 * @param index
+	 * @return true if the option at that index was not null, otherwise false.
+	 */
+	public boolean checkValidOption(int index) {
+		return options[index] != null;
+	}
 
 	/**
 	 * MAX 4 OPTIONS per segment
@@ -53,10 +66,6 @@ public class ConversationSegment implements Serializable {
 		}
 	}
 
-	public void setPicture(String pictureFileName) {
-		this.picture = pictureFileName;
-	}
-
 	/**
 	 * Adds a line of text to the display, text is added in order
 	 * 
@@ -66,59 +75,50 @@ public class ConversationSegment implements Serializable {
 		lines.add(line);
 	}
 
+	public BufferedImage getPicture() {
+		return picture;
+	}
+
 	public Option[] getOptions() {
 		return options;
-	}
-
-	public ConversationSegment doOption(String option) {
-		for (Option o : options) {
-			if (o.getText().equals(option)) {
-				return o.doOption();
-			}
-		}
-		throw new Error("Could not find option of the specified name");
-	}
-
-	public boolean checkValidOption(int index) {
-		return options[index] != null;
-	}
-
-	ConversationSegment doOption(int optionIndex) {
-		return options[optionIndex].doOption();
 	}
 
 	/**
 	 * @return the next line of text
 	 */
-	String getNextLine() {
+	public String getNextLine() {
 		if (currentLine >= lines.size())
 			return null;
 		return lines.get(currentLine++);
 	}
 
-	List<String> getLines() {
+	/**
+	 * @return all the lines of text.
+	 */
+	public List<String> getLines() {
 		return lines;
 	}
 
-	void clearLines() {
+	public String getPictureName() {
+		return this.pictureName;
+	}
+
+	public void clearLines() {
 		lines = new ArrayList<String>();
 	}
 
-	String getPictureName() {
-		return this.picture;
-	}
-
-	BufferedImage getPicture() {
-		if (picture == null || picture.equals(""))
-			return null;
-		try {
-			if (picture.startsWith("ConversationPictures/"))
-				return ImageIO.read(new File(picture));
-			return ImageIO.read(new File("ConversationPictures/" + picture));
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void setPicture(String pictureFileName) throws IOException {
+		pictureName = pictureFileName;
+		if (pictureFileName == null || pictureFileName.equals("")) {
+			picture = null;
+			return;
 		}
-		return null;
+		if (pictureFileName.startsWith("ConversationPictures/")) {
+			picture = ImageIO.read(new File(pictureFileName));
+			return;
+		}
+		picture = ImageIO.read(new File("ConversationPictures/" + pictureFileName));
+
 	}
 
 }

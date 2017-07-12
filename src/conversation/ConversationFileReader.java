@@ -45,7 +45,8 @@ public class ConversationFileReader {
 	 * @param filename
 	 */
 	public static void saveConversation(ConversationSegment root, String filename) {
-		filename += ".conv";
+		if (!filename.endsWith(".conv"))// will add .conv to end of file name if it is not specified
+			filename += ".conv";
 		try {
 			FileOutputStream fout = new FileOutputStream(filename);
 			ObjectOutputStream oos = new ObjectOutputStream(fout);

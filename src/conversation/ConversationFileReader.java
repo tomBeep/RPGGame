@@ -18,7 +18,7 @@ public class ConversationFileReader {
 	 */
 	public static ConversationSegment loadFile(String filename) throws Exception {
 		// will add the ".conv" if it is not specified in the file name
-		if (!filename.substring(filename.length() - 5).equals(".conv")) {
+		if (!filename.endsWith(".conv")) {
 			filename += ".conv";
 		}
 

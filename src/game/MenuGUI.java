@@ -1,8 +1,8 @@
 package game;
 
-public class gameplayGUI {
+public class MenuGUI {
 
-	public gameplayGUI() {
+	public MenuGUI() {
 		// TODO Auto-generated constructor stub
 	}
 

@@ -38,6 +38,14 @@ public class Option implements Serializable {
 		return text;
 	}
 
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public void setAction(ChoiceAction action) {
+		this.action = action;
+	}
+
 	public ConversationSegment getNext() {
 		return next;
 	}

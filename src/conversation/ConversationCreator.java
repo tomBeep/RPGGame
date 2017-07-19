@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,12 +30,11 @@ public class ConversationCreator {
 	ConversationSegment root;
 	ConversationSegment current;
 	JPanel panel;
+	List<ConversationSegment> list;
 
 	private final int width = 1000, height = 750;
 
-	// TODO select/un-select different segments using the mouse/keys
 	// TODO allow you to create an option which links to an already added Segment
-	// TODO label Segments with their depth
 
 	public ConversationCreator() {
 		startGUI();
@@ -41,21 +43,26 @@ public class ConversationCreator {
 	public void startGUI() {
 		JButton b1 = new JButton("Create new Root Segment");
 		b1.addActionListener((e) -> createNewSegment());
+		b1.addKeyListener(this.getKeyListener());
 
 		JButton b2 = new JButton("Edit current Segment");
 		b2.addActionListener((e) -> editCurrentSegment());
+		b2.addKeyListener(this.getKeyListener());
 
 		JButton b3 = new JButton("Delete all Segments");
 		b3.addActionListener((e) -> {
 			root = current = null;
 			panel.repaint();
 		});
+		b3.addKeyListener(this.getKeyListener());
 
 		JButton b4 = new JButton("Save Conversation");
 		b4.addActionListener((e) -> saveConversation());
+		b4.addKeyListener(this.getKeyListener());
 
 		JButton b5 = new JButton("Load Conversation");
 		b5.addActionListener((e) -> loadConversation());
+		b5.addKeyListener(this.getKeyListener());
 
 		panel = new JPanel() {
 			@Override
@@ -74,6 +81,8 @@ public class ConversationCreator {
 		buttons.add(b5);
 
 		JFrame frame = new JFrame();
+		panel.addKeyListener(getKeyListener());
+		panel.setFocusable(true);
 		frame.add(panel, BorderLayout.PAGE_START);
 		frame.add(buttons, BorderLayout.PAGE_END);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,6 +103,7 @@ public class ConversationCreator {
 				root = ConversationFileReader.loadFile(text.getText());
 				current = root;
 				this.panel.repaint();
+				this.startList();
 				frame.dispose();
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(panel, "File could not be found");
@@ -157,6 +167,39 @@ public class ConversationCreator {
 		frame.setVisible(true);
 	}
 
+	private KeyListener getKeyListener() {
+		return new KeyListener() {
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				if (arg0.getKeyCode() == KeyEvent.VK_DOWN || arg0.getKeyCode() == KeyEvent.VK_RIGHT
+						|| arg0.getKeyCode() == KeyEvent.VK_1 || arg0.getKeyCode() == KeyEvent.VK_D
+						|| arg0.getKeyCode() == KeyEvent.VK_S) {
+					if (list == null)
+						return;
+					for (int i = 0; i < list.size(); i++) {
+						if (i == list.size() - 1)
+							current = list.get(0);
+						else if (list.get(i) == current) {
+							current = list.get(i + 1);
+							break;
+						}
+					}
+
+					panel.repaint();
+				}
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+
+		};
+	}
+
 	private void drawTree(Graphics g) {
 		if (current == null || root == null)
 			return;
@@ -176,7 +219,8 @@ public class ConversationCreator {
 					ConversationSegment s = o.getNext();
 					Box b = e.getValue();
 					Box b2 = lines.get(s);
-					g.drawLine(b.x, b.y, b2.x, b2.y);
+					g.drawLine(b.x + 45, b.y + 20, b2.x, b2.y);
+					g.fillOval(b2.x - 5, b2.y - 5, 10, 10);
 				}
 			}
 		}
@@ -256,6 +300,7 @@ public class ConversationCreator {
 				optionList.add(optionBox.getItemAt(i));
 			if (updateCurrentSegment(lines.getText(), pic.getText(), optionList, frame))
 				frame.dispose();
+			this.startList();
 		});
 
 		JButton addOption = new JButton("Add Option");
@@ -263,6 +308,13 @@ public class ConversationCreator {
 			if (optionBox.getItemCount() >= 4)
 				return;// can't add more than 4 options to a segment
 			newOption(optionBox);
+		});
+
+		JButton editOption = new JButton("Edit Option");
+		editOption.addActionListener((e) -> {
+			if (optionBox.getItemCount() == 0)
+				return;// can't add more than 4 options to a segment
+			editOption((Option) optionBox.getSelectedItem());
 		});
 
 		JButton moveToOption = new JButton("UPDATE current Segment and move to Selected Option");
@@ -294,6 +346,7 @@ public class ConversationCreator {
 		options.add(deleteOption);
 		options.add(addOption);
 		options.add(moveToOption);
+		options.add(editOption);
 		options.add(cancel);
 		options.add(update);
 
@@ -303,6 +356,40 @@ public class ConversationCreator {
 			frame.setTitle("Segment Editor");
 		else
 			frame.setTitle("New Root Segment");
+		frame.setVisible(true);
+	}
+
+	public void editOption(Option o) {
+		JFrame frame = new JFrame();
+		frame.setLayout(new GridLayout(0, 2));
+		frame.add(new JLabel("Option Text: "));
+		JTextArea text = new JTextArea();
+		frame.add(text);
+		text.setText(o.getText());
+		frame.add(new JLabel("Option Action"));
+		JComboBox<ChoiceAction> choiceActions = new JComboBox<ChoiceAction>();
+		if (o.getAction() != null)
+			choiceActions.addItem(o.getAction());
+		frame.add(choiceActions);
+		JButton add = new JButton("Update");
+		add.addActionListener((e) -> {
+			o.setText(text.getText());
+			if (choiceActions.getItemCount() != 0)
+				o.setAction((ChoiceAction) choiceActions.getSelectedItem());
+			else
+				o.setAction(null);
+			frame.dispose();
+		});
+		add.setBackground(Color.green);
+
+		JButton cancel = new JButton("Cancel");
+		cancel.addActionListener((e) -> frame.dispose());
+		cancel.setBackground(Color.red);
+		frame.add(cancel);
+		frame.add(add);
+		frame.setSize(500, 300);
+		frame.setLocation(150, 100);
+		frame.setTitle("New Option");
 		frame.setVisible(true);
 	}
 
@@ -333,6 +420,22 @@ public class ConversationCreator {
 		frame.setLocation(150, 100);
 		frame.setTitle("New Option");
 		frame.setVisible(true);
+	}
+
+	public void startList() {
+		if (root == null)
+			return;
+		list = new ArrayList<>();
+		addItems(root);
+	}
+
+	private void addItems(ConversationSegment root) {
+		list.add(root);
+		for (int i = 0; i < 4; i++) {
+			if (root.getOptions() != null && root.getOptions()[i] != null && root.getOptions()[i].getNext() != null) {
+				addItems(root.getOptions()[i].getNext());
+			}
+		}
 	}
 
 	public String getSegmentText() {

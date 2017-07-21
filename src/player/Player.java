@@ -13,7 +13,6 @@ public class Player {
 
 	private Health health;
 	private Mana mana;
-
 	private BackPack backpack;
 
 	public Player() {

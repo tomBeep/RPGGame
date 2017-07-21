@@ -30,8 +30,15 @@ public class ConversationFileReader {
 		return c;
 	}
 
+	/**
+	 * Because you cannot save buffered images, the buffered images must be loaded again (Using their filenames) when
+	 * the conversation is loaded.
+	 * 
+	 * @param root
+	 * @throws IOException
+	 */
 	private static void loadPictures(ConversationSegment root) throws IOException {
-		root.setPicture(root.getPictureName());
+		root.setPicture(root.getPictureName());// loads the bufferedImage
 		for (int i = 0; i < 4; i++) {
 			if (root.getOptions()[i] != null && root.getOptions()[i].getNext() != null)
 				loadPictures(root.getOptions()[i].getNext());

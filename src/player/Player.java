@@ -1,5 +1,7 @@
 package player;
 
+import backpack.BackPack;
+
 /**
  * This is a player object, a player object contains a backpack which is where all of the player's items are stored. A
  * player should also have a location, health, attack, magic attack and potentially other things.
@@ -12,6 +14,8 @@ public class Player {
 	private Health health;
 	private Mana mana;
 
+	private BackPack backpack;
+
 	public Player() {
 		// TODO Auto-generated constructor stub
 	}
@@ -22,5 +26,9 @@ public class Player {
 
 	public Mana getMana() {
 		return mana;
+	}
+
+	public BackPack getBackPack() {
+		return backpack;
 	}
 }

@@ -1,7 +1,11 @@
-package items;
+package backpack;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import items.Item;
+import items.UsableItem;
+import items.EquipableItem;
 import player.Player;
 
 /**
@@ -13,7 +17,7 @@ import player.Player;
  */
 public class BackPack {
 	private List<Item> itemBag;
-	private List<Item> equippedItems;
+	private List<EquipableItem> equippedItems;
 
 	private int packSize;// number of allowed unequiped items
 	private int equippedItemsSize;// number of allow equipped items.
@@ -52,7 +56,7 @@ public class BackPack {
 		equippedItemsSize = equipSize;
 		itemBag = new ArrayList<>();
 		equippedItems = new ArrayList<>();
-		for (Item i : oldPack.equippedItems)
+		for (EquipableItem i : oldPack.equippedItems)
 			this.equippedItems.add(i);
 		for (Item i : oldPack.itemBag)
 			this.itemBag.add(i);
@@ -79,12 +83,16 @@ public class BackPack {
 	 * @throws BackPackException
 	 *             if the max number of equipable items has been reached already
 	 */
-	public void equipItem(Player p, Item i) throws BackPackException {
+	public void equipItem(Player p, EquipableItem i) throws BackPackException {
 		if (equippedItems.size() >= equippedItemsSize)
 			throw new BackPackException("Can't equip more than the specifed amount of items");
 		itemBag.remove(i);
 		equippedItems.add(i);
 		i.applyEffect(p);
+	}
+
+	public void useItem(Player p, UsableItem item) {
+		item.use(p);
 	}
 
 	/**
@@ -97,7 +105,7 @@ public class BackPack {
 	 * @throws BackPackException
 	 *             if the itemBag is full, then you cannot unequip anything.
 	 */
-	public void unequipItem(Player p, Item i) throws BackPackException {
+	public void unequipItem(Player p, EquipableItem i) throws BackPackException {
 		if (itemBag.size() >= packSize)
 			throw new BackPackException("Can't unequip item if bag is full");
 		equippedItems.remove(i);
@@ -114,12 +122,6 @@ public class BackPack {
 	 */
 	public void destroyItem(Item i) {
 		itemBag.remove(i);
-	}
-
-	private class BackPackException extends Exception {
-		public BackPackException(String s) {
-			super(s);
-		}
 	}
 
 }

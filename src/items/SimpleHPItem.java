@@ -2,38 +2,19 @@ package items;
 
 import player.Player;
 
-public class SimpleHPItem implements Item {
-	private String name, description;
-	private int price;
+/**
+ * A Simple HP boosting item, that boosts maximum HP when equipped.
+ * 
+ * @author Thomas Edwards
+ *
+ */
+public class SimpleHPItem extends SimpleAbstractItem implements EquipableItem {
+
 	private int effectAmount;
-	private Rarity rarity;
 
-	public SimpleHPItem(String name, String description, int price, int effectAmount, Rarity rarity) {
-		this.name = name;
-		this.description = description;
-		this.price = price;
+	public SimpleHPItem(String name, String description, int price, Rarity rarity, int effectAmount) {
+		super(name, description, price, rarity);
 		this.effectAmount = effectAmount;
-		this.rarity = rarity;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
-	public int getSellPrice() {
-		return price;
-	}
-
-	@Override
-	public Rarity getRarity() {
-		return rarity;
 	}
 
 	@Override

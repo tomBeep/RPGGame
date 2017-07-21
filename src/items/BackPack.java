@@ -5,8 +5,8 @@ import java.util.List;
 import player.Player;
 
 /**
- * BackPack class which contains a list of equipedItems and a List of Items in
- * the bag
+ * BackPack class which contains a list of equipedItems and a list of un-equippedItems in
+ * the bag.
  *
  * @author Thomas Edwards
  *
@@ -15,12 +15,47 @@ public class BackPack {
 	private List<Item> itemBag;
 	private List<Item> equippedItems;
 
-	private int packSize = 20;
-	private int equippedItemSize = 6;
+	private int packSize;// number of allowed unequiped items
+	private int equippedItemsSize;// number of allow equipped items.
 
+	/**
+	 * Creates a new empty backpack of the default storage size 20 and able to equip 3 items.
+	 */
 	public BackPack() {
+		packSize = 20;
+		equippedItemsSize = 3;
 		itemBag = new ArrayList<>();
 		equippedItems = new ArrayList<>();
+	}
+
+	/**
+	 * Creates a new empty backpack of the specified sizes.
+	 */
+	public BackPack(int storageSize, int equipSize) {
+		packSize = storageSize;
+		equippedItemsSize = equipSize;
+		itemBag = new ArrayList<>();
+		equippedItems = new ArrayList<>();
+	}
+
+	/**
+	 * Creates a new Backpack of the specified size and moves all items in the old backPack to the new one. Does not
+	 * un-equip/equip any items.
+	 * 
+	 * @throws BackPackException
+	 *             if you try to move to a smaller bag while having more items than can fit in that smaller bag.
+	 */
+	public BackPack(int storageSize, int equipSize, BackPack oldPack) throws BackPackException {
+		if (oldPack.itemBag.size() > storageSize || oldPack.equippedItems.size() > equipSize)
+			throw new BackPackException("You have too many items in your bag to move to a smaller bag");
+		packSize = storageSize;
+		equippedItemsSize = equipSize;
+		itemBag = new ArrayList<>();
+		equippedItems = new ArrayList<>();
+		for (Item i : oldPack.equippedItems)
+			this.equippedItems.add(i);
+		for (Item i : oldPack.itemBag)
+			this.itemBag.add(i);
 	}
 
 	/**
@@ -37,7 +72,7 @@ public class BackPack {
 	}
 
 	/**
-	 * Equips the item and applys its effects to the player
+	 * Equips the item and apply its effects to the player
 	 *
 	 * @param p
 	 * @param i
@@ -45,8 +80,8 @@ public class BackPack {
 	 *             if the max number of equipable items has been reached already
 	 */
 	public void equipItem(Player p, Item i) throws BackPackException {
-		if (equippedItems.size() >= equippedItemSize)
-			throw new BackPackException("Can't equip more than 6 items");
+		if (equippedItems.size() >= equippedItemsSize)
+			throw new BackPackException("Can't equip more than the specifed amount of items");
 		itemBag.remove(i);
 		equippedItems.add(i);
 		i.applyEffect(p);
@@ -71,7 +106,7 @@ public class BackPack {
 	}
 
 	/**
-	 * Destroys an item which is not currently equipped.
+	 * Destroys an item which is not currently equipped. After an Item is destroyed, it can no longer be gotten back.
 	 *
 	 * @param i
 	 *            the item to be destroyed, items which are currently equipped

@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import org.newdawn.slick.Animation;
+
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,12 +24,12 @@ public class Map {
 	ArrayList<ArrayList<Integer>> map = new ArrayList<ArrayList<Integer>>();
 
 	HashMap<Integer, BufferedImage> images = new HashMap<Integer, BufferedImage>();
-	
-	static int  TilePixelSize = 32;
+
+	static int TilePixelSize = 32;
 
 	public Map() {
 		this.fillMap();
-		//This gets
+		// This gets
 		try {
 
 			images.put(1, ImageIO.read(getClass().getResourceAsStream("/MapTextures/grass.jpg")));
@@ -45,27 +47,28 @@ public class Map {
 			map.get(1).add(1);
 		}
 	}
-	
-	//x and y is where we start rendering from. Map is the list of tiles, width is the width of the map in tiles
-	public void renderMap(int x, int y,ArrayList<ArrayList<Integer>>map,int width,Graphics g) {
+
+	// x and y is where we start rendering from. Map is the list of tiles, width is
+	// the width of the map in tiles
+	public void renderMap(int x, int y, ArrayList<ArrayList<Integer>> map, int width, Graphics g) {
 		int tileRow = 1;
-		int tileCol =1;
-		
-		for(int i=0;i<map.size();i++) {
-			for(int j=0;j<map.get(j).size();j++) {
-				int pixelPosX = x+(tileCol-1)*TilePixelSize;
-				int pixelPosY = y+(tileRow-1)*TilePixelSize;
-			
-				g.drawImage(pixelPosX,pixelPosY,images.get(map.get(j).get(i)));
-				tileCol+=1;
-				if(tileCol > width) {
-					tileCol=1;
-					tileRow+=1;
+		int tileCol = 1;
+
+		for (int i = 0; i < map.size(); i++) {
+			for (int j = 0; j < map.get(j).size(); j++) {
+				int pixelPosX = x + (tileCol - 1) * TilePixelSize;
+				int pixelPosY = y + (tileRow - 1) * TilePixelSize;
+
+				//g.drawImage(pixelPosX, pixelPosY, images.get(map.get(j).get(i)));
+				tileCol += 1;
+				if (tileCol > width) {
+					tileCol = 1;
+					tileRow += 1;
 				}
 			}
-			
+
 		}
-		
+
 	}
 
 }

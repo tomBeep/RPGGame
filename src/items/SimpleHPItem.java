@@ -10,21 +10,21 @@ import player.Player;
  */
 public class SimpleHPItem extends SimpleAbstractItem implements EquipableItem {
 
-	private int effectAmount;
+	private int healthIncrease;
 
-	public SimpleHPItem(String name, String description, int price, Rarity rarity, int effectAmount) {
+	public SimpleHPItem(String name, String description, int price, Rarity rarity, int healthIncrease) {
 		super(name, description, price, rarity);
-		this.effectAmount = effectAmount;
+		this.healthIncrease = healthIncrease;
 	}
 
 	@Override
 	public void applyEffect(Player p) {
-		p.getHealth().increaseMaxAmount(effectAmount);
+		p.getHealth().increaseMaxAmount(healthIncrease);
 	}
 
 	@Override
 	public void removeEffect(Player p) {
-		p.getHealth().decreaseMaxAmount(effectAmount);
+		p.getHealth().decreaseMaxAmount(healthIncrease);
 	}
 
 }

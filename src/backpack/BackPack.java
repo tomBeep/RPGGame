@@ -10,7 +10,7 @@ import player.Player;
 
 /**
  * BackPack class which contains a list of equipedItems and a list of un-equippedItems in
- * the bag.
+ * the pack.
  *
  * @author Thomas Edwards
  *
@@ -91,6 +91,13 @@ public class BackPack {
 		i.applyEffect(p);
 	}
 
+	/**
+	 * Uses the item.
+	 * 
+	 * @param p
+	 *            the player who has the item and which the item should be used on
+	 * @param item
+	 */
 	public void useItem(Player p, UsableItem item) {
 		item.use(p);
 	}

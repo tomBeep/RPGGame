@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 public class Map {
 
 	// The map itself
-	private ArrayList<Tile> tileMap;
+	private ArrayList<ArrayList<Tile>> tileMap;
 
 	// width of map in pixels
 	private int width;
@@ -34,16 +34,36 @@ public class Map {
 
 	public JPanel drawingPanel;
 
-	// The actual map image
-	BufferedImage img;
+	// The map background
+	BufferedImage imgback;
 
-	public Map(BufferedImage img) throws IOException {
-		this.img = img;
-		this.tileMap = new ArrayList<Tile>();
-		this.width = img.getWidth();
-		this.height = img.getHeight();
-		this.loadMap(this.img);
+	// The map objects e.g. trees
+	BufferedImage imgobj;
+
+	// The maps collision blocks(not to be rendered)
+	BufferedImage imgcol;
+
+	public Map(BufferedImage imgback, BufferedImage imgobj, BufferedImage imgcol) throws IOException {
+		this.imgback = imgback;
+		this.imgobj = imgobj;
+		this.imgcol = imgcol;
+		this.tileMap = new ArrayList<ArrayList<Tile>>(2);
+		this.width = imgback.getWidth();
+		this.height = imgback.getHeight();
+		this.loadMap(this.imgback, this.imgobj, this.imgcol);
 		this.setupTestGUI();
+	}
+
+	public void render(Graphics g, int regionX, int regionY, int regionW, int regionH) {
+		
+			for (int i = 0; i < 2; i++) {
+				for(Tile t:tileMap.get(i)) {
+					t.render(g);
+				}
+			}
+			//need to add rendering for a camera view
+
+		
 	}
 
 	public void setupTestGUI() {
@@ -52,10 +72,10 @@ public class Map {
 		// this is our main drawingPanel
 		drawingPanel = new JPanel() {
 			@Override
-			// this is the redraw method, it is called everytime drawingPanel.repaint() is called
+			// this is the redraw method, it is called everytime drawingPanel.repaint() is
+			// called
 			public void paintComponent(Graphics g) {
-				g.fillRect(50, 50, 400, 400);// example
-
+				render(g, 0, 0, 0, 0);
 				// here we can call the render method, or whatever drawing method you want
 				// render(g,bla,bla,bla,bla);
 			}
@@ -66,39 +86,45 @@ public class Map {
 		// means that the programme will end when the frame is closed
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		frame.setSize(1000, 600);// sets the size of the frame
+		frame.setSize(640, 900);// sets the size of the frame
 		frame.setVisible(true);// shows the frame
 
 	}
 
-	public void render(Graphics g, int regionX, int regionY, int regionW, int regionH) {
-		for (Tile t : this.tileMap) {
-			// if (t.inside(regionX, regionY) || t.inside(regionX + regionW, regionY + regionH)) {
-			t.render(g);
-			// }
-
-		}
-	}
-
-	public void loadMap(BufferedImage img) {
-
-		for (int y = 0; y < this.height; y = +32) {
-			for (int x = 0; x < this.width; x = +32) {
-				Tile newT = new Tile(x, y, img.getSubimage(x, y, TileSize, TileSize));
-				this.tileMap.add(newT);
+	public void loadMap(BufferedImage imgback, BufferedImage imgobj, BufferedImage imgcol) {
+		tileMap.add(new ArrayList<Tile>());
+		tileMap.add(new ArrayList<Tile>());
+		tileMap.add(new ArrayList<Tile>());
+		
+        
+		for (int y = 0; y < this.height; y = y + 32) {
+			for (int x = 0; x < this.width; x = x + 32) {
+				Tile newBackTile = new Tile(x, y, imgback.getSubimage(x, y, TileSize, TileSize));
+				this.tileMap.get(0).add(newBackTile);
+				
+				Tile newObjTile = new Tile(x, y, imgobj.getSubimage(x, y, TileSize, TileSize));
+				this.tileMap.get(1).add(newObjTile);
+				
+				Tile newColTile = new Tile(x, y, imgback.getSubimage(x, y, TileSize, TileSize));
+				this.tileMap.get(2).add(newColTile);
+				System.out.println(x);
 
 			}
+			System.out.println(y);
 		}
 
 	}
 
 	/**
-	 * FOR TEST PURPOSES ONLY
-	 * This will start the map programme with the buffered image called grass.png
+	 * FOR TEST PURPOSES ONLY This will start the map programme with the buffered
+	 * image called grass.png
 	 */
 	public static void main(String[] args) {
 		try {
-			new Map((ImageIO.read(new File("MapTextures/simpleMapV3.png"))));
+			BufferedImage back = ImageIO.read(new File("MapTextures/simplemapback.png"));
+			BufferedImage obj = ImageIO.read(new File("MapTextures/simplemapobj.png"));
+			BufferedImage col = ImageIO.read(new File("MapTextures/simplemapcol.png"));
+			new Map(back,obj,col);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

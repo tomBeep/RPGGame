@@ -19,12 +19,26 @@ public class Controls implements KeyListener {
 	private final double speed = 0.6;// the speed
 	private double dx, dy;
 
+	/**
+	 * Creates a new Controls for the given player, atm it simply moves the player around
+	 * 
+	 * @param p
+	 */
 	public Controls(Player p) {
 		this.l = p.getLocation();
 	}
 
 	/**
-	 * Should be called ~25 times per second when updated
+	 * Creates a new Controls key listener which moves the location provided.
+	 * 
+	 * @param l
+	 */
+	public Controls(Location l) {
+		this.l = l;
+	}
+
+	/**
+	 * Should be called ~25 times per second when updated or just whenever you want to actually move the location
 	 */
 	public void move() {
 		l.moveLocation(dx, dy);

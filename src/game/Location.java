@@ -1,5 +1,11 @@
 package game;
 
+/**
+ * A Pixel location on the map.
+ * 
+ * @author Thomas Edwards
+ *
+ */
 public class Location {
 
 	private double x, y;

@@ -63,6 +63,7 @@ public class Map {
 		}
 		// need to add rendering for a camera view
 
+
 	}
 
 	public ArrayList<ArrayList<Tile>> getTileMap() {
@@ -95,6 +96,7 @@ public class Map {
 
 	public void setImgcol(BufferedImage imgcol) {
 		this.imgcol = imgcol;
+
 	}
 
 	public void setupTestGUI() {

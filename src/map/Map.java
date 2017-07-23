@@ -63,6 +63,40 @@ public class Map {
 		}
 		// need to add rendering for a camera view
 
+
+	}
+
+	public ArrayList<ArrayList<Tile>> getTileMap() {
+		return tileMap;
+	}
+
+	public void setTileMap(ArrayList<ArrayList<Tile>> tileMap) {
+		this.tileMap = tileMap;
+	}
+
+	public BufferedImage getImgback() {
+		return imgback;
+	}
+
+	public void setImgback(BufferedImage imgback) {
+		this.imgback = imgback;
+	}
+
+	public BufferedImage getImgobj() {
+		return imgobj;
+	}
+
+	public void setImgobj(BufferedImage imgobj) {
+		this.imgobj = imgobj;
+	}
+
+	public BufferedImage getImgcol() {
+		return imgcol;
+	}
+
+	public void setImgcol(BufferedImage imgcol) {
+		this.imgcol = imgcol;
+
 	}
 
 	public void setupTestGUI() {
@@ -111,6 +145,31 @@ public class Map {
 			System.out.println(y);
 		}
 
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public Tile findTile(int layer,int x,int y) {
+		for(int i = 0;i<this.getTileMap().size();i++) {
+			if(this.tileMap.get(layer).get(i).getX()==x && this.tileMap.get(layer).get(i).getY()==y) {
+				return this.tileMap.get(layer).get(i);
+			}
+		}
+		return null;
 	}
 
 	/**

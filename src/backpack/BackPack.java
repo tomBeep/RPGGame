@@ -9,17 +9,17 @@ import items.EquipableItem;
 import player.Player;
 
 /**
- * BackPack class which contains a list of equipedItems and a list of un-equippedItems in
+ * BackPack class which contains a list of equipedItems (The bag) and a list of un-equippedItems (The equippeditems) in
  * the pack.
  *
  * @author Thomas Edwards
  *
  */
 public class BackPack {
-	private List<Item> itemBag;
-	private List<EquipableItem> equippedItems;
+	private List<Item> itemBag;// Items in the bag
+	private List<EquipableItem> equippedItems;// Items equipped
 
-	private int packSize;// number of allowed unequiped items
+	private int packSize;// number of allowed items in bag
 	private int equippedItemsSize;// number of allow equipped items.
 
 	/**
@@ -34,6 +34,11 @@ public class BackPack {
 
 	/**
 	 * Creates a new empty backpack of the specified sizes.
+	 * 
+	 * @param storageSize
+	 *            the max amount of items in the bag
+	 * @param equipSize
+	 *            the max amount of equippable items
 	 */
 	public BackPack(int storageSize, int equipSize) {
 		packSize = storageSize;
@@ -46,6 +51,12 @@ public class BackPack {
 	 * Creates a new Backpack of the specified size and moves all items in the old backPack to the new one. Does not
 	 * un-equip/equip any items.
 	 * 
+	 * @param storageSize
+	 *            the max amount of items in the bag
+	 * @param equipSize
+	 *            the max amount of equipable items
+	 * @param oldPack
+	 *            the old BackPack that you would like to copy items from
 	 * @throws BackPackException
 	 *             if you try to move to a smaller bag while having more items than can fit in that smaller bag.
 	 */

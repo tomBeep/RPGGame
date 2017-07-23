@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 /**
  * Added a single comment
  * 
- * @author Thomas Edwards
+ * @author James Watt
  *
  */
 public class Map {
@@ -55,15 +55,14 @@ public class Map {
 	}
 
 	public void render(Graphics g, int regionX, int regionY, int regionW, int regionH) {
-		
-			for (int i = 0; i < 2; i++) {
-				for(Tile t:tileMap.get(i)) {
-					t.render(g);
-				}
-			}
-			//need to add rendering for a camera view
 
-		
+		for (int i = 0; i < 2; i++) {
+			for (Tile t : tileMap.get(i)) {
+				t.render(g);
+			}
+		}
+		// need to add rendering for a camera view
+
 	}
 
 	public ArrayList<ArrayList<Tile>> getTileMap() {
@@ -127,16 +126,15 @@ public class Map {
 		tileMap.add(new ArrayList<Tile>());
 		tileMap.add(new ArrayList<Tile>());
 		tileMap.add(new ArrayList<Tile>());
-		
-        
+
 		for (int y = 0; y < this.height; y = y + 32) {
 			for (int x = 0; x < this.width; x = x + 32) {
 				Tile newBackTile = new Tile(x, y, imgback.getSubimage(x, y, TileSize, TileSize));
 				this.tileMap.get(0).add(newBackTile);
-				
+
 				Tile newObjTile = new Tile(x, y, imgobj.getSubimage(x, y, TileSize, TileSize));
 				this.tileMap.get(1).add(newObjTile);
-				
+
 				Tile newColTile = new Tile(x, y, imgback.getSubimage(x, y, TileSize, TileSize));
 				this.tileMap.get(2).add(newColTile);
 				System.out.println(x);
@@ -181,7 +179,7 @@ public class Map {
 			BufferedImage back = ImageIO.read(new File("MapTextures/simplemapback.png"));
 			BufferedImage obj = ImageIO.read(new File("MapTextures/simplemapobj.png"));
 			BufferedImage col = ImageIO.read(new File("MapTextures/simplemapcol.png"));
-			new Map(back,obj,col);
+			new Map(back, obj, col);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

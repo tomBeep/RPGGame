@@ -3,6 +3,10 @@ package map;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+/**
+ * @author James Watt
+ *
+ */
 public class Tile {
 	private BufferedImage img;
 	private int x;
@@ -27,9 +31,9 @@ public class Tile {
 		return false;
 
 	}
-	
+
 	public void render(Graphics g) {
-		g.drawImage(img,x,y,null);
+		g.drawImage(img, x, y, null);
 	}
 
 	public int getX() {

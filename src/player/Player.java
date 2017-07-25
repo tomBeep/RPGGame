@@ -2,6 +2,7 @@ package player;
 
 import backpack.BackPack;
 import game.Location;
+import map.Tile;
 
 /**
  * This is a player object, a player object contains a backpack which is where all of the player's items are stored. A
@@ -17,8 +18,8 @@ public class Player {
 	private BackPack backpack;
 	private Location location;
 
-	public Player() {
-		// TODO Auto-generated constructor stub
+	public Player(Location startingPosition) {
+		this.location = startingPosition;
 	}
 
 	public Health getHealth() {

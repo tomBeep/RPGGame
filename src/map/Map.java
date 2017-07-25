@@ -32,16 +32,14 @@ public class Map {
 	// Each tile will always be 32x32 pixels
 	public final int TileSize = 32;
 
-	public JPanel drawingPanel;
-
 	// The map background
-	BufferedImage imgback;
+	private BufferedImage imgback;
 
 	// The map objects e.g. trees
-	BufferedImage imgobj;
+	private BufferedImage imgobj;
 
 	// The maps collision blocks(not to be rendered)
-	BufferedImage imgcol;
+	private BufferedImage imgcol;
 
 	public Map(BufferedImage imgback, BufferedImage imgobj, BufferedImage imgcol) throws IOException {
 		this.imgback = imgback;
@@ -51,17 +49,6 @@ public class Map {
 		this.width = imgback.getWidth();
 		this.height = imgback.getHeight();
 		this.loadMap(this.imgback, this.imgobj, this.imgcol);
-
-	}
-
-	public void render(Graphics g, int regionX, int regionY, int regionW, int regionH) {
-
-		for (int i = 0; i < 2; i++) {
-			for (Tile t : tileMap.get(i)) {
-				t.render(g);
-			}
-		}
-		// need to add rendering for a camera view
 
 	}
 

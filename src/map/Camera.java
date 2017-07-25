@@ -90,7 +90,10 @@ public class Camera {
 			frame.setVisible(true);// shows the frame
 
 		}
-		
+		/**
+		 * FOR TEST PURPOSES ONLY This will start the map programme with the buffered
+		 * image called grass.png
+		 */
 		public static void main(String[] args) throws Exception {
 			try {
 				BufferedImage back = ImageIO.read(new File("MapTextures/simplemapback.png"));

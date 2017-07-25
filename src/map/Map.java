@@ -51,7 +51,7 @@ public class Map {
 		this.width = imgback.getWidth();
 		this.height = imgback.getHeight();
 		this.loadMap(this.imgback, this.imgobj, this.imgcol);
-		this.setupTestGUI();
+
 	}
 
 	public void render(Graphics g, int regionX, int regionY, int regionW, int regionH) {
@@ -62,7 +62,6 @@ public class Map {
 			}
 		}
 		// need to add rendering for a camera view
-
 
 	}
 
@@ -99,31 +98,6 @@ public class Map {
 
 	}
 
-	public void setupTestGUI() {
-		JFrame frame = new JFrame();// all java swing desktop GUI's must have a JFrame
-
-		// this is our main drawingPanel
-		drawingPanel = new JPanel() {
-			@Override
-			// this is the redraw method, it is called everytime drawingPanel.repaint() is
-			// called
-			public void paintComponent(Graphics g) {
-				render(g, 0, 0, 0, 0);
-				// here we can call the render method, or whatever drawing method you want
-				// render(g,bla,bla,bla,bla);
-			}
-		};
-
-		frame.add(drawingPanel);// if we are only adding a single thing to our frame, we can do it like this.
-
-		// means that the programme will end when the frame is closed
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		frame.setSize(640, 900);// sets the size of the frame
-		frame.setVisible(true);// shows the frame
-
-	}
-
 	public void loadMap(BufferedImage imgback, BufferedImage imgobj, BufferedImage imgcol) {
 		tileMap.add(new ArrayList<Tile>());
 		tileMap.add(new ArrayList<Tile>());
@@ -146,7 +120,7 @@ public class Map {
 		}
 
 	}
-	
+
 	public int getWidth() {
 		return width;
 	}
@@ -163,28 +137,13 @@ public class Map {
 		this.height = height;
 	}
 
-	public Tile findTile(int layer,int x,int y) {
-		for(int i = 0;i<this.getTileMap().size();i++) {
-			if(this.tileMap.get(layer).get(i).getX()==x && this.tileMap.get(layer).get(i).getY()==y) {
+	public Tile findTile(int layer, int x, int y) {
+		for (int i = 0; i < this.getTileMap().size(); i++) {
+			if (this.tileMap.get(layer).get(i).getX() == x && this.tileMap.get(layer).get(i).getY() == y) {
 				return this.tileMap.get(layer).get(i);
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * FOR TEST PURPOSES ONLY This will start the map programme with the buffered
-	 * image called grass.png
-	 */
-	public static void main(String[] args) {
-		try {
-			BufferedImage back = ImageIO.read(new File("MapTextures/simplemapback.png"));
-			BufferedImage obj = ImageIO.read(new File("MapTextures/simplemapobj.png"));
-			BufferedImage col = ImageIO.read(new File("MapTextures/simplemapcol.png"));
-			new Map(back, obj, col);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

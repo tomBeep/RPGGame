@@ -49,11 +49,11 @@ public class ConversationDrawer {
 		drawSegment(50, 50, root, current);
 	}
 
-	public int drawSegment(int x, int y, ConversationSegment s, ConversationSegment current) {
+	private int drawSegment(int x, int y, ConversationSegment s, ConversationSegment current) {
 		if (s.getOptions() == null || s.getOptions()[0] == null) {// if segment is a leaf
 			x = leafX;
 			leafX += leafDX;
-		} else {// segment is not a leaf.
+		} else {// if segment is not a leaf.
 			int childWidths = 0, counter = 0;
 			int[] childPoints = new int[4];// records the x positions of each child.
 			for (int i = 0; i < 4; i++) {
@@ -68,7 +68,7 @@ public class ConversationDrawer {
 					}
 				}
 			}
-			x = (int) (childWidths / counter);// bases parent x as average of child x
+			x = (int) (childWidths / counter);// bases this x as average of child x
 
 			// now draw Lines to Children.
 			drawChildLines(x, y, counter, childPoints);

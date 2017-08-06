@@ -34,9 +34,9 @@ public class ConversationCreator {
 
 	private final int width = 1000, height = 750;
 
-	// TODO allow you to create an option which links to an already added Segment
-	// TODO change loading/saving to use java file chooser
-	// OPTION panel doesn't show current Option
+	// TODO allow you to create an option which links to an already added Segment.
+	// TODO change loading/saving to use java file chooser.
+	// TODO find some way to display the option text which the child segment came from.
 
 	public ConversationCreator() {
 		startGUI();

@@ -20,7 +20,8 @@ public class Player {
 	private int gold, evilPoints, goodPoints;
 
 	// ------------Getters and Setters------------
-	// TODO check min/max values eg. gold should not be able to be set to negative.
+	// TODO check min/max values eg. gold should not be able to be set to negative, it should throw an excpetion if this
+	// happens...
 
 	public int getGold() {
 		return gold;

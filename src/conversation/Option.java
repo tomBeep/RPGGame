@@ -56,6 +56,7 @@ public class Option implements Serializable {
 	 * @return the next Conversation Segment
 	 */
 	public ConversationSegment doOption() {
+		System.out.println("Option was done...");
 		if (action != null) {
 			ChoiceAction c = ChoiceAction.choiceActions.get(action);
 			if (c != null)

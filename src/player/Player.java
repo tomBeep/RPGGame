@@ -17,6 +17,34 @@ public class Player {
 	private Mana mana;
 	private BackPack backpack;
 	private Location location;
+	private int gold, evilPoints, goodPoints;
+
+	// ------------Getters and Setters------------
+	// TODO check min/max values eg. gold should not be able to be set to negative.
+
+	public int getGold() {
+		return gold;
+	}
+
+	public void setGold(int gold) {
+		this.gold = gold;
+	}
+
+	public int getEvilPoints() {
+		return evilPoints;
+	}
+
+	public void setEvilPoints(int evilPoints) {
+		this.evilPoints = evilPoints;
+	}
+
+	public int getGoodPoints() {
+		return goodPoints;
+	}
+
+	public void setGoodPoints(int goodPoints) {
+		this.goodPoints = goodPoints;
+	}
 
 	public Player(Location startingPosition) {
 		this.location = startingPosition;

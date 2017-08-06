@@ -77,7 +77,7 @@ public class ConversationDrawer {
 			g.setColor(Color.blue);// selected Segment is blue
 		else
 			g.setColor(Color.black);
-		
+
 		// draws the rectangle representing the segment.
 		g.drawRect(x, y, rectWidth, rectHeight);
 		// draws the little OptionRectangles
@@ -88,7 +88,7 @@ public class ConversationDrawer {
 		// records the clickable area of this segment
 		Rectangle area = new Rectangle(x, y, rectWidth, rectHeight);
 		mouseMap.put(area, s);
-		
+
 		return x;
 	}
 
@@ -106,7 +106,7 @@ public class ConversationDrawer {
 
 	private void drawSummary(int x, int y, ConversationSegment s) {
 		g.setFont(new Font("Courier", 0, 12));
-		String summary = s.getSummary().toUpperCase();
+		String summary = s.getSummary();
 		if (summary != null) {
 			int end1, end2, end3;
 			end1 = summary.length() < 22 ? summary.length() : 22;

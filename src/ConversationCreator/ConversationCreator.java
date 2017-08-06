@@ -36,6 +36,7 @@ public class ConversationCreator {
 
 	// TODO allow you to create an option which links to an already added Segment
 	// TODO change loading/saving to use java file chooser
+	// OPTION panel doesn't show current Option
 
 	public ConversationCreator() {
 		startGUI();
@@ -279,10 +280,17 @@ public class ConversationCreator {
 		text.setText(o.getText());
 		frame.add(new JLabel("Option Action"));
 
+		// adds all possible choice actions to the box
 		JComboBox<String> choiceActions = new JComboBox<String>();
 		choiceActions.addItem(null);
+		int i = 1;
 		for (String s : ChoiceAction.choiceActions.keySet()) {
 			choiceActions.addItem(s);
+			// ensures that the correct index is selected
+			if (o.getAction() != null && o.getAction().equals(s)) {
+				choiceActions.setSelectedIndex(i);
+			}
+			i++;
 		}
 
 		frame.add(choiceActions);

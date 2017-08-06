@@ -43,12 +43,27 @@ public class ConversationDrawer {
 		return null;
 	}
 
+	/**
+	 * Recurssivly draws the conversation loaded into this object.
+	 * 
+	 * @param current
+	 *            the current segment selected (will be drawn in blue)
+	 */
 	public void draw(ConversationSegment current) {
 		mouseMap = new HashMap<>();
 		leafX = 20;
 		drawSegment(50, 50, root, current);
 	}
 
+	/**
+	 * Recurssivley draws out all the segments and lines.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param s
+	 * @param current
+	 * @return the x position of where this segment was drawn.
+	 */
 	private int drawSegment(int x, int y, ConversationSegment s, ConversationSegment current) {
 		if (s.getOptions() == null || s.getOptions()[0] == null) {// if segment is a leaf
 			x = leafX;

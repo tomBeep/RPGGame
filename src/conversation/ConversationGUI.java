@@ -241,7 +241,7 @@ public class ConversationGUI extends JFrame implements Conversation {
 
 	// TODO remove, only for testing purposes
 	public static void main(String[] args) {
-		Conversation i = new ConversationGUI("TEST1");
+		Conversation i = new ConversationGUI("TEST3");
 		Thread t = new Thread(i);
 		t.start();
 	}

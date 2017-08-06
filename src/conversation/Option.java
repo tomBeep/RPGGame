@@ -13,7 +13,7 @@ public class Option implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -713174756300223308L;
-	private ChoiceAction action;
+	private String action;
 	private String text;
 	private ConversationSegment next;
 
@@ -24,7 +24,7 @@ public class Option implements Serializable {
 	 * @param next
 	 *            the next segment in this conversation
 	 */
-	public Option(String optionText, ChoiceAction action, ConversationSegment next) {
+	public Option(String optionText, String action, ConversationSegment next) {
 		this.text = optionText;
 		this.action = action;
 		this.next = next;
@@ -42,7 +42,7 @@ public class Option implements Serializable {
 		this.text = text;
 	}
 
-	public void setAction(ChoiceAction action) {
+	public void setAction(String action) {
 		this.action = action;
 	}
 
@@ -56,8 +56,11 @@ public class Option implements Serializable {
 	 * @return the next Conversation Segment
 	 */
 	public ConversationSegment doOption() {
-		if (action != null)
-			action.doAction();
+		if (action != null) {
+			ChoiceAction c = ChoiceAction.choiceActions.get(action);
+			if (c != null)
+				c.doAction();
+		}
 		return next;
 	}
 
@@ -66,7 +69,7 @@ public class Option implements Serializable {
 		return this.text;
 	}
 
-	public ChoiceAction getAction() {
+	public String getAction() {
 		return this.action;
 	}
 

@@ -35,6 +35,7 @@ public class ConversationCreator {
 	private final int width = 1000, height = 750;
 
 	// TODO allow you to create an option which links to an already added Segment
+	// TODO change loading/saving to use java file chooser
 
 	public ConversationCreator() {
 		startGUI();
@@ -192,7 +193,7 @@ public class ConversationCreator {
 
 		JTextArea pic = new JTextArea();
 		pic.setText(current.getPictureName());
-		options.add(new JLabel("Picture File Name"));
+		options.add(new JLabel("Picture File Name (Picture must be in ConversationPictures folder)"));
 		options.add(pic);
 
 		JButton cancel = new JButton("Cancel");

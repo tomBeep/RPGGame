@@ -30,9 +30,8 @@ import javax.swing.border.LineBorder;
  * @author Thomas Edwards
  *
  */
-public class ConversationGUI implements Conversation {
+public class ConversationGUI extends JFrame implements Conversation {
 	private ConversationSegment root;
-	private JFrame frame;
 	private JLabel picture;
 	private JTextArea[] options = new JTextArea[4];
 	private JTextArea text;
@@ -45,6 +44,7 @@ public class ConversationGUI implements Conversation {
 	 *            the root of the conversation tree for this conversation
 	 */
 	public ConversationGUI(ConversationSegment root) {
+		super();
 		this.root = root;
 	}
 
@@ -76,7 +76,7 @@ public class ConversationGUI implements Conversation {
 	 * conversation is available to be called.
 	 */
 	public void end() {
-		frame.dispose();
+		this.dispose();
 	}
 
 	/**
@@ -144,15 +144,14 @@ public class ConversationGUI implements Conversation {
 			e.printStackTrace();
 		}
 
-		frame = new JFrame();
-		frame.add(picture, BorderLayout.PAGE_START);
-		frame.add(text, BorderLayout.CENTER);
-		frame.add(optionPanel, BorderLayout.PAGE_END);
-		frame.setLocation(500, 100);
-		frame.setBackground(Color.white);
-		frame.setUndecorated(true);
-		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, Color.RED));
-		frame.addKeyListener(new KeyListener() {
+		super.add(picture, BorderLayout.PAGE_START);
+		super.add(text, BorderLayout.CENTER);
+		super.add(optionPanel, BorderLayout.PAGE_END);
+		super.setLocation(500, 100);
+		super.setBackground(Color.white);
+		super.setUndecorated(true);
+		super.getRootPane().setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, Color.GRAY));
+		super.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent arg0) {
 			}
@@ -167,9 +166,9 @@ public class ConversationGUI implements Conversation {
 			}
 
 		});
-		frame.setSize(frameWidth, frameHeight);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// TODO change to not close programme
-		frame.setVisible(true);
+		super.setSize(frameWidth, frameHeight);
+		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// TODO change to not close programme
+		super.setVisible(true);
 
 	}
 
@@ -242,7 +241,7 @@ public class ConversationGUI implements Conversation {
 
 	// TODO remove, only for testing purposes
 	public static void main(String[] args) {
-		Conversation i = new ConversationGUI("TEST1");
+		Conversation i = new ConversationGUI("TEST3");
 		Thread t = new Thread(i);
 		t.start();
 	}

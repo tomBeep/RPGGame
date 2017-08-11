@@ -1,21 +1,15 @@
-package conversation;
+package ConversationCreator;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.KeyEventDispatcher;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,16 +19,24 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+
+import conversation.ChoiceAction;
+import conversation.ConversationFileReader;
+import conversation.ConversationSegment;
+import conversation.Option;
 
 public class ConversationCreator {
 	ConversationSegment root;
 	ConversationSegment current;
 	JPanel panel;
-	List<ConversationSegment> list;
+	ConversationDrawer cd;
 
 	private final int width = 1000, height = 750;
 
-	// TODO allow you to create an option which links to an already added Segment
+	// TODO allow you to create an option which links to an already added Segment.
+	// TODO change loading/saving to use java file chooser.
+	// TODO find some way to display the option text which the child segment came from.
 
 	public ConversationCreator() {
 		startGUI();
@@ -43,26 +45,21 @@ public class ConversationCreator {
 	public void startGUI() {
 		JButton b1 = new JButton("Create new Root Segment");
 		b1.addActionListener((e) -> createNewSegment());
-		b1.addKeyListener(this.getKeyListener());
 
 		JButton b2 = new JButton("Edit current Segment");
 		b2.addActionListener((e) -> editCurrentSegment());
-		b2.addKeyListener(this.getKeyListener());
 
 		JButton b3 = new JButton("Delete all Segments");
 		b3.addActionListener((e) -> {
 			root = current = null;
 			panel.repaint();
 		});
-		b3.addKeyListener(this.getKeyListener());
 
 		JButton b4 = new JButton("Save Conversation");
 		b4.addActionListener((e) -> saveConversation());
-		b4.addKeyListener(this.getKeyListener());
 
 		JButton b5 = new JButton("Load Conversation");
 		b5.addActionListener((e) -> loadConversation());
-		b5.addKeyListener(this.getKeyListener());
 
 		panel = new JPanel() {
 			@Override
@@ -71,6 +68,7 @@ public class ConversationCreator {
 				drawTree(g);
 			}
 		};
+		panel.addMouseListener(new TomMouse());
 		panel.setPreferredSize(new Dimension(this.width, this.height));
 
 		JComponent buttons = new JPanel();
@@ -81,7 +79,6 @@ public class ConversationCreator {
 		buttons.add(b5);
 
 		JFrame frame = new JFrame();
-		panel.addKeyListener(getKeyListener());
 		panel.setFocusable(true);
 		frame.add(panel, BorderLayout.PAGE_START);
 		frame.add(buttons, BorderLayout.PAGE_END);
@@ -103,7 +100,6 @@ public class ConversationCreator {
 				root = ConversationFileReader.loadFile(text.getText());
 				current = root;
 				this.panel.repaint();
-				this.startList();
 				frame.dispose();
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(panel, "File could not be found");
@@ -167,94 +163,11 @@ public class ConversationCreator {
 		frame.setVisible(true);
 	}
 
-	private KeyListener getKeyListener() {
-		return new KeyListener() {
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if (arg0.getKeyCode() == KeyEvent.VK_DOWN || arg0.getKeyCode() == KeyEvent.VK_RIGHT
-						|| arg0.getKeyCode() == KeyEvent.VK_1 || arg0.getKeyCode() == KeyEvent.VK_D
-						|| arg0.getKeyCode() == KeyEvent.VK_S) {
-					if (list == null)
-						return;
-					for (int i = 0; i < list.size(); i++) {
-						if (i == list.size() - 1)
-							current = list.get(0);
-						else if (list.get(i) == current) {
-							current = list.get(i + 1);
-							break;
-						}
-					}
-
-					panel.repaint();
-				}
-			}
-
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-			}
-
-		};
-	}
-
 	private void drawTree(Graphics g) {
 		if (current == null || root == null)
 			return;
-		g.setColor(Color.BLACK);
-		Map<ConversationSegment, Box> boxes = new HashMap<>();
-		Map<ConversationSegment, Integer> nodes = new HashMap<>();
-		this.setNodes(boxes, nodes, root, 0);
-		this.drawNodes(g, boxes, nodes);
-		this.drawLines(g, boxes);
-	}
-
-	private void drawLines(Graphics g, Map<ConversationSegment, Box> lines) {
-		for (Entry<ConversationSegment, Box> e : lines.entrySet()) {
-			for (int i = 0; i < 4; i++) {
-				Option o = e.getKey().getOptions()[i];
-				if (o != null && o.getNext() != null) {
-					ConversationSegment s = o.getNext();
-					Box b = e.getValue();
-					Box b2 = lines.get(s);
-					g.drawLine(b.x + 45, b.y + 20, b2.x, b2.y);
-					g.fillOval(b2.x - 5, b2.y - 5, 10, 10);
-				}
-			}
-		}
-	}
-
-	private void setNodes(Map<ConversationSegment, Box> boxes, Map<ConversationSegment, Integer> nodes,
-			ConversationSegment current, int depth) {
-		if (current == null)
-			return;
-		if (!nodes.containsKey(current)) {
-			nodes.put(current, depth);
-			for (int i = 0; i < 4; i++) {
-				if (current.getOptions()[i] != null) {
-					setNodes(boxes, nodes, current.getOptions()[i].getNext(), depth + 1);
-				}
-			}
-		}
-	}
-
-	private void drawNodes(Graphics g, Map<ConversationSegment, Box> boxes, Map<ConversationSegment, Integer> nodes) {
-		Map<Integer, Integer> depthMap = new HashMap<>();// depth -> x
-		for (Entry<ConversationSegment, Integer> e : nodes.entrySet()) {
-			Integer x = depthMap.get(e.getValue());
-			if (x == null)
-				x = 40;
-			g.drawRect(x, e.getValue() * 80, 90, 40);
-			boxes.put(e.getKey(), new Box(x, e.getValue() * 80));
-			if (e.getKey() == current) {
-				g.setColor(Color.RED);
-				g.drawRect(x + 2, e.getValue() * 80 + 2, 86, 36);
-				g.setColor(Color.BLACK);
-			}
-			depthMap.put(e.getValue(), x + 100);
-		}
+		cd = new ConversationDrawer(g, root);
+		cd.draw(current);
 	}
 
 	public void editingPanel(boolean newRoot) {
@@ -281,7 +194,7 @@ public class ConversationCreator {
 
 		JTextArea pic = new JTextArea();
 		pic.setText(current.getPictureName());
-		options.add(new JLabel("Picture File Name"));
+		options.add(new JLabel("Picture File Name (Picture must be in ConversationPictures folder)"));
 		options.add(pic);
 
 		JButton cancel = new JButton("Cancel");
@@ -300,7 +213,6 @@ public class ConversationCreator {
 				optionList.add(optionBox.getItemAt(i));
 			if (updateCurrentSegment(lines.getText(), pic.getText(), optionList, frame))
 				frame.dispose();
-			this.startList();
 		});
 
 		JButton addOption = new JButton("Add Option");
@@ -367,15 +279,26 @@ public class ConversationCreator {
 		frame.add(text);
 		text.setText(o.getText());
 		frame.add(new JLabel("Option Action"));
-		JComboBox<ChoiceAction> choiceActions = new JComboBox<ChoiceAction>();
-		if (o.getAction() != null)
-			choiceActions.addItem(o.getAction());
+
+		// adds all possible choice actions to the box
+		JComboBox<String> choiceActions = new JComboBox<String>();
+		choiceActions.addItem(null);
+		int i = 1;
+		for (String s : ChoiceAction.choiceActions.keySet()) {
+			choiceActions.addItem(s);
+			// ensures that the correct index is selected
+			if (o.getAction() != null && o.getAction().equals(s)) {
+				choiceActions.setSelectedIndex(i);
+			}
+			i++;
+		}
+
 		frame.add(choiceActions);
 		JButton add = new JButton("Update");
 		add.addActionListener((e) -> {
 			o.setText(text.getText());
-			if (choiceActions.getItemCount() != 0)
-				o.setAction((ChoiceAction) choiceActions.getSelectedItem());
+			if (choiceActions.getItemCount() != 0 && choiceActions.getSelectedItem() != null)
+				o.setAction((String) choiceActions.getSelectedItem());
 			else
 				o.setAction(null);
 			frame.dispose();
@@ -400,12 +323,17 @@ public class ConversationCreator {
 		JTextArea text = new JTextArea();
 		frame.add(text);
 		frame.add(new JLabel("Option Action"));
-		JComboBox<ChoiceAction> choiceActions = new JComboBox<ChoiceAction>();
+
+		JComboBox<String> choiceActions = new JComboBox<String>();
+		choiceActions.addItem(null);
+		for (String s : ChoiceAction.choiceActions.keySet()) {
+			choiceActions.addItem(s);
+		}
+
 		frame.add(choiceActions);
 		JButton add = new JButton("Add");
 		add.addActionListener((e) -> {
-			Option o = new Option(text.getText(), (ChoiceAction) choiceActions.getSelectedItem(),
-					new ConversationSegment());
+			Option o = new Option(text.getText(), (String) choiceActions.getSelectedItem(), new ConversationSegment());
 			optionBox.addItem(o);
 			frame.dispose();
 		});
@@ -420,22 +348,6 @@ public class ConversationCreator {
 		frame.setLocation(150, 100);
 		frame.setTitle("New Option");
 		frame.setVisible(true);
-	}
-
-	public void startList() {
-		if (root == null)
-			return;
-		list = new ArrayList<>();
-		addItems(root);
-	}
-
-	private void addItems(ConversationSegment root) {
-		list.add(root);
-		for (int i = 0; i < 4; i++) {
-			if (root.getOptions() != null && root.getOptions()[i] != null && root.getOptions()[i].getNext() != null) {
-				addItems(root.getOptions()[i].getNext());
-			}
-		}
 	}
 
 	public String getSegmentText() {
@@ -470,17 +382,40 @@ public class ConversationCreator {
 		return true;
 	}
 
-	private class Box {
-		int x, y;
-
-		public Box(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-
 	public static void main(String[] args) {
 		new ConversationCreator();
 	}
 
+	private class TomMouse implements MouseListener {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			if (root == null)
+				return;
+			ConversationSegment s = cd.getSegment(e.getX(), e.getY());
+			if (s == null)
+				return;
+			current = s;
+			if (SwingUtilities.isRightMouseButton(e))
+				editCurrentSegment();
+			else
+				panel.repaint();
+		}
+
+	}
 }

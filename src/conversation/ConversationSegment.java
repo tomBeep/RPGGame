@@ -52,7 +52,7 @@ public class ConversationSegment implements Serializable {
 	 * @param next
 	 *            the next segment to go to if this option is chosen
 	 */
-	public void addOption(String optionText, ChoiceAction action, ConversationSegment next) {
+	public void addOption(String optionText, String action, ConversationSegment next) {
 		if (options[3] != null)
 			throw new Error("Can't have more than 4 conversation options in a segment");
 		Option o = new Option(optionText, action, next);
@@ -117,6 +117,12 @@ public class ConversationSegment implements Serializable {
 		}
 		picture = ImageIO.read(new File("ConversationPictures/" + pictureFileName));
 
+	}
+
+	public String getSummary() {
+		if (lines.size() >= 1)
+			return lines.get(0);
+		return null;
 	}
 
 }

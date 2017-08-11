@@ -79,6 +79,7 @@ public class Camera {
 			// called
 			public void paintComponent(Graphics g) {
 				render(g);
+				
 				// here we can call the render method, or whatever drawing method you want
 				// render(g,bla,bla,bla,bla);
 			}
@@ -105,6 +106,8 @@ public class Camera {
 			BufferedImage col = ImageIO.read(new File("MapTextures/simplemapcol.png"));
 			Map m = new Map(back, obj, col);
 			Camera c = new Camera(0, 0, 100, 100, m);
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

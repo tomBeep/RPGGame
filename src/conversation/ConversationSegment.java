@@ -19,9 +19,7 @@ import javax.imageio.ImageIO;
  */
 public class ConversationSegment implements Serializable {
 
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -7265774393992482071L;
 	/**
 	 * The lines of text displayed prior to the choice
